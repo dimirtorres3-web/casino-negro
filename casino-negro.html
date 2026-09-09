@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
-<title>Casino Negro</title>
+<title>Casino Online</title>
 <style>
   :root{
     --bg: #0a0a0a;
@@ -1352,6 +1352,47 @@
     cursor:pointer;
     white-space:nowrap;
   }
+  .recharge-row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap: 10px;
+    background: linear-gradient(160deg, #1c1712, #0e0e0e);
+    border: 1px solid var(--gold-dim);
+    border-radius: 10px;
+    padding: 12px 14px;
+    margin-bottom: 10px;
+  }
+  .recharge-info{ flex:1; min-width:0; }
+  .recharge-name{ font-size: 13px; color: var(--text); }
+  .recharge-amount{ font-size: 16px; color: var(--gold); font-weight:bold; }
+  .recharge-actions{ display:flex; gap: 6px; flex-shrink:0; }
+  .recharge-approve{
+    background: var(--green);
+    border: none;
+    color: #fff;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-family: inherit;
+    font-size: 11px;
+    cursor:pointer;
+  }
+  .recharge-reject{
+    background: var(--panel2);
+    border: 1px solid var(--red);
+    color: #e5a7a7;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-family: inherit;
+    font-size: 11px;
+    cursor:pointer;
+  }
+  .recharge-empty{
+    text-align:center;
+    color: var(--text-dim);
+    font-size: 12px;
+    padding: 10px;
+  }
 </style>
 </head>
 <body>
@@ -1360,7 +1401,7 @@
   <!-- ============ PANTALLA: LOGIN / REGISTRO ============ -->
   <div id="screenAuth" class="screen active">
     <header>
-      <h1>CASINO NEGRO</h1>
+      <h1>CASINO ONLINE</h1>
       <p>Iniciá sesión o creá tu cuenta</p>
     </header>
 
@@ -1412,7 +1453,7 @@
   <!-- ============ PANTALLA: LOBBY ============ -->
   <div id="screenLobby" class="screen">
     <header>
-      <h1>CASINO NEGRO</h1>
+      <h1>CASINO ONLINE</h1>
       <p>Elegí un juego para empezar</p>
     </header>
 
@@ -1822,91 +1863,50 @@ let rouletteBet = 10;
 let selectedBet = null;
 
 const balanceEls = document.querySelectorAll('.balance-value');
-function updateBalance(){ balanceEls.forEach(el => el.textContent = balance); }
+function updateBalance(){
+  balanceEls.forEach(el => el.textContent = balance);
+  saveBalance();
+}
 
 /* ======================================================================
-   AUTENTICACIÓN — DEMO LOCAL (solo en esta sesión del navegador)
-   ======================================================================
-   Todo lo de acá abajo (mockDB, register, verifyCode, login) es una
-   simulación para poder probar el flujo completo de registro/login/
-   verificación sin backend. Para producción, reemplazar estas funciones
-   por llamadas reales a Supabase (o Firebase). Ejemplo con Supabase:
+   AUTENTICACIÓN — usa el backend real (server.js + PostgreSQL) cuando la
+   página está servida por ese servidor (Railway). Si se abre el archivo
+   suelto sin servidor, cae a un modo local de respaldo (localDB, abajo)
+   que solo dura mientras la pestaña está abierta, para poder seguir
+   probando la interfaz sin necesidad de tener el server corriendo.
 
-   1) Agregar en el head el SDK de Supabase vía CDN (unpkg.com/@supabase/supabase-js@2)
-   2) Inicializar:
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-   3) Registro (Supabase manda el email de verificación solo):
-        const { data, error } = await supabase.auth.signUp({ email, password });
-
-   4) Verificar el código que llega al correo (si usás OTP):
-        const { data, error } = await supabase.auth.verifyOtp({ email, token: code, type: 'email' });
-
-   5) Login:
-        const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-
-   6) Guardar/leer el saldo de fichas (tabla "profiles" con columna "balance"):
-        await supabase.from('profiles').update({ balance }).eq('id', user.id);
-        const { data } = await supabase.from('profiles').select('balance').eq('id', user.id).single();
-
-   Buscá los comentarios "TODO SUPABASE" abajo: son los puntos exactos
-   donde reemplazar la lógica local por estas llamadas reales.
+   Lo único que sigue faltando para producción real es el envío del
+   código de verificación por correo de verdad: ahora mismo /api/register
+   devuelve el código en la respuesta (demoCode) en vez de mandarlo por
+   email. Para eso hay que contratar un servicio de envío de emails
+   (por ejemplo Resend o SendGrid), conseguir su API key, agregarla como
+   variable de entorno en Railway, y en server.js (endpoint /api/register)
+   reemplazar la línea que arma "demoCode" por una llamada real a ese
+   servicio para mandar el código al correo del usuario.
    ====================================================================== */
 
-const mockDB = { users: {} }; // TODO SUPABASE: reemplazar por tabla "profiles" en Supabase
 let currentUser = null;
-let pendingRegistration = null;
 
 const SUPERADMIN_EMAIL = 'dimirtorres3@gmail.com';
-const STORAGE_KEY = 'casino_negro_users';
 
-// La cuenta de súper admin queda lista al instante, sin depender de nada externo.
-mockDB.users[SUPERADMIN_EMAIL] = {
-  name: 'Súper Admin',
-  email: SUPERADMIN_EMAIL,
-  password: '6569488Bt',
-  balance: 1000,
-  role: 'superadmin'
-};
+// Si esta página corre servida por server.js (Railway), hay backend real con
+// base de datos. Si se abre el archivo suelto (sin servidor), no hay fetch
+// disponible en ese sentido y usamos un modo local de respaldo solo para
+// poder seguir probando sin perder toda la funcionalidad.
+const hasBackend = location.protocol === 'http:' || location.protocol === 'https:';
+const localDB = { users: {} };
+localDB.users[SUPERADMIN_EMAIL] = { name: 'Súper Admin', email: SUPERADMIN_EMAIL, password: '6569488Bt', balance: 1000, role: 'superadmin' };
+let localPendingRegistration = null;
 
-// Persistencia solo para probar dentro de Claude (window.storage). Es SOLO un
-// "extra" de fondo: crear cuenta, verificar e iniciar sesión NUNCA esperan a
-// esto, así nunca se puede quedar la pantalla congelada por un guardado lento
-// o por el cartel de permiso de "acceder a datos compartidos".
-function persistDB(){
-  try{
-    if(window.storage){
-      window.storage.set(STORAGE_KEY, JSON.stringify(mockDB.users), true).catch(function(){});
-    }
-  }catch(e){ /* sin almacenamiento disponible, se mantiene solo en memoria */ }
-}
-
-function loadDBInBackground(){
-  try{
-    if(window.storage){
-      window.storage.get(STORAGE_KEY, true).then(function(res){
-        if(res && res.value){
-          const loaded = JSON.parse(res.value);
-          for(const email in loaded){
-            if(!mockDB.users[email]) mockDB.users[email] = loaded[email];
-          }
-          // la cuenta de súper admin nunca se pisa con datos viejos guardados
-          mockDB.users[SUPERADMIN_EMAIL] = {
-            name: 'Súper Admin',
-            email: SUPERADMIN_EMAIL,
-            password: '6569488Bt',
-            balance: mockDB.users[SUPERADMIN_EMAIL] ? mockDB.users[SUPERADMIN_EMAIL].balance : 1000,
-            role: 'superadmin'
-          };
-        }
-      }).catch(function(){ /* sin almacenamiento disponible, no importa */ });
-    }
-  }catch(e){ /* sin almacenamiento disponible, no importa */ }
-}
-loadDBInBackground();
-
-function generateCode(){
-  return String(Math.floor(100000 + Math.random()*900000));
+async function apiCall(path, body){
+  const res = await fetch(path, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body || {})
+  });
+  const data = await res.json();
+  if(!res.ok) throw new Error(data.error || 'Error del servidor');
+  return data;
 }
 
 const tabLogin = document.getElementById('tabLogin');
@@ -1939,89 +1939,95 @@ document.querySelectorAll('.toggle-pass').forEach(btn=>{
   });
 });
 
-function doRegister(){
+async function doRegister(){
   const errEl = document.getElementById('registerError');
   errEl.textContent = '';
+  const btn = document.getElementById('registerSubmitBtn');
+  const name = document.getElementById('regName').value.trim();
+  const email = document.getElementById('regEmail').value.trim().toLowerCase();
+  const password = document.getElementById('regPassword').value.trim();
+
+  if(!name || !email){ errEl.textContent = 'Completá tu nombre y correo'; return; }
+  if(password.length < 6){ errEl.textContent = 'La contraseña debe tener al menos 6 caracteres'; return; }
+
+  btn.disabled = true;
   try{
-    const name = document.getElementById('regName').value.trim();
-    const email = document.getElementById('regEmail').value.trim().toLowerCase();
-    const password = document.getElementById('regPassword').value.trim();
-
-    if(!name || !email){
-      errEl.textContent = 'Completá tu nombre y correo';
-      return;
+    let code;
+    if(hasBackend){
+      const data = await apiCall('/api/register', { name, email, password });
+      code = data.demoCode; // TODO EMAIL: en producción esto no se devuelve, se manda por correo
+    } else {
+      if(localDB.users[email]) throw new Error('Ya existe una cuenta con ese correo');
+      code = generateCode();
+      localPendingRegistration = { name, email, password, code };
     }
-    if(password.length < 6){
-      errEl.textContent = 'La contraseña debe tener al menos 6 caracteres';
-      return;
-    }
-    if(mockDB.users[email]){
-      errEl.textContent = 'Ya existe una cuenta con ese correo';
-      return;
-    }
-
-    // TODO SUPABASE: supabase.auth.signUp({ email, password })
-    const code = generateCode();
-    pendingRegistration = { name, email, password, code };
     document.getElementById('demoCode').textContent = code;
     document.getElementById('verifyCode').value = '';
     document.getElementById('verifyError').textContent = '';
     showAuthForm('verify');
   } catch(err){
-    errEl.textContent = 'Error inesperado: ' + err.message;
+    errEl.textContent = err.message;
+  } finally {
+    btn.disabled = false;
   }
 }
 document.getElementById('registerSubmitBtn').addEventListener('click', doRegister);
 
-function doVerify(){
+function generateCode(){
+  return String(Math.floor(100000 + Math.random()*900000));
+}
+
+async function doVerify(){
   const errEl = document.getElementById('verifyError');
   errEl.textContent = '';
+  const btn = document.getElementById('verifySubmitBtn');
+  const email = document.getElementById('regEmail').value.trim().toLowerCase();
+  const code = document.getElementById('verifyCode').value.trim();
+
+  btn.disabled = true;
   try{
-    const input = document.getElementById('verifyCode').value.trim();
-
-    if(!pendingRegistration){
-      errEl.textContent = 'No hay un registro pendiente';
-      return;
+    if(hasBackend){
+      const data = await apiCall('/api/verify', { email, code });
+      loginAs(data.user);
+    } else {
+      if(!localPendingRegistration || localPendingRegistration.email !== email) throw new Error('No hay un registro pendiente');
+      if(code !== localPendingRegistration.code) throw new Error('Código incorrecto');
+      const u = { name: localPendingRegistration.name, email: localPendingRegistration.email, password: localPendingRegistration.password, balance: 0, role: 'user' };
+      localDB.users[email] = u;
+      localPendingRegistration = null;
+      loginAs(u);
     }
-    // TODO SUPABASE: supabase.auth.verifyOtp({ email, token: input, type: 'email' })
-    if(input !== pendingRegistration.code){
-      errEl.textContent = 'Código incorrecto';
-      return;
-    }
-
-    const name = pendingRegistration.name;
-    const email = pendingRegistration.email;
-    const password = pendingRegistration.password;
-    mockDB.users[email] = { name: name, email: email, password: password, balance: 1000, role: 'user' };
-    pendingRegistration = null;
-    persistDB(); // guarda de fondo, sin bloquear
-    loginAs(mockDB.users[email]);
   } catch(err){
-    errEl.textContent = 'Error inesperado: ' + err.message;
+    errEl.textContent = err.message;
+  } finally {
+    btn.disabled = false;
   }
 }
 document.getElementById('verifySubmitBtn').addEventListener('click', doVerify);
 
-function doLogin(){
+async function doLogin(){
   const errEl = document.getElementById('loginError');
   errEl.textContent = '';
-  try{
-    const email = document.getElementById('loginEmail').value.trim().toLowerCase();
-    const password = document.getElementById('loginPassword').value.trim();
+  const btn = document.getElementById('loginSubmitBtn');
+  const email = document.getElementById('loginEmail').value.trim().toLowerCase();
+  const password = document.getElementById('loginPassword').value.trim();
 
-    if(!email || !password){
-      errEl.textContent = 'Completá tu correo y contraseña';
-      return;
+  if(!email || !password){ errEl.textContent = 'Completá tu correo y contraseña'; return; }
+
+  btn.disabled = true;
+  try{
+    if(hasBackend){
+      const data = await apiCall('/api/login', { email, password });
+      loginAs(data.user);
+    } else {
+      const u = localDB.users[email];
+      if(!u || u.password !== password) throw new Error('Correo o contraseña incorrectos');
+      loginAs(u);
     }
-    // TODO SUPABASE: supabase.auth.signInWithPassword({ email, password })
-    const user = mockDB.users[email];
-    if(!user || user.password !== password){
-      errEl.textContent = 'Correo o contraseña incorrectos';
-      return;
-    }
-    loginAs(user);
   } catch(err){
-    errEl.textContent = 'Error inesperado: ' + err.message;
+    errEl.textContent = err.message;
+  } finally {
+    btn.disabled = false;
   }
 }
 document.getElementById('loginSubmitBtn').addEventListener('click', doLogin);
@@ -2048,12 +2054,17 @@ function loginAs(user){
   }
 }
 
-document.getElementById('logoutBtn').addEventListener('click', function(){
-  if(currentUser){
-    // TODO SUPABASE: supabase.from('profiles').update({ balance }).eq('id', user.id)
-    mockDB.users[currentUser.email].balance = balance;
-    persistDB(); // guarda de fondo, sin bloquear el cierre de sesión
+function saveBalance(){
+  if(!currentUser) return;
+  if(hasBackend){
+    apiCall('/api/balance', { email: currentUser.email, balance: balance }).catch(function(){});
+  } else if(localDB.users[currentUser.email]){
+    localDB.users[currentUser.email].balance = balance;
   }
+}
+
+document.getElementById('logoutBtn').addEventListener('click', function(){
+  saveBalance();
   currentUser = null;
   document.getElementById('screenLobby').classList.remove('active');
   document.getElementById('screenGame').classList.remove('active');
@@ -2074,18 +2085,35 @@ function roleLabel(role){
   return 'Jugador';
 }
 
-function renderAdminPanel(){
+async function renderAdminPanel(){
   const list = document.getElementById('adminUserList');
+  list.innerHTML = 'Cargando...';
+
+  let users;
+  try{
+    if(hasBackend){
+      const res = await fetch('/api/users');
+      const data = await res.json();
+      users = data.users;
+    } else {
+      users = Object.values(localDB.users);
+    }
+  } catch(err){
+    list.innerHTML = 'No se pudo cargar la lista de usuarios';
+    return;
+  }
+
+  users.sort((a,b)=> a.name.localeCompare(b.name));
   list.innerHTML = '';
-  const users = Object.values(mockDB.users).sort((a,b)=> a.name.localeCompare(b.name));
 
   users.forEach(u=>{
     const row = document.createElement('div');
     row.className = 'admin-user-row';
+    row.style.flexWrap = 'wrap';
 
     const info = document.createElement('div');
     info.className = 'admin-user-info';
-    info.innerHTML = '<div class="admin-user-name">' + u.name + '</div><div class="admin-user-email">' + u.email + '</div>';
+    info.innerHTML = '<div class="admin-user-name">' + u.name + '</div><div class="admin-user-email">' + u.email + ' · ' + u.balance + ' fichas</div>';
 
     const badge = document.createElement('span');
     badge.className = 'role-badge ' + u.role;
@@ -2097,25 +2125,57 @@ function renderAdminPanel(){
     if(currentUser.role === 'superadmin' && u.email !== SUPERADMIN_EMAIL){
       const btn = document.createElement('button');
       btn.className = 'admin-role-btn';
-      if(u.role === 'admin'){
-        btn.textContent = 'Quitar admin';
-        btn.addEventListener('click', function(){
-          u.role = 'user';
-          persistDB();
+      const newRole = u.role === 'admin' ? 'user' : 'admin';
+      btn.textContent = u.role === 'admin' ? 'Quitar admin' : 'Hacer admin';
+      btn.addEventListener('click', async function(){
+        btn.disabled = true;
+        try{
+          if(hasBackend){
+            await apiCall('/api/role', { requesterEmail: currentUser.email, targetEmail: u.email, role: newRole });
+          } else if(localDB.users[u.email]){
+            localDB.users[u.email].role = newRole;
+          }
           renderAdminPanel();
-        });
-      } else {
-        btn.textContent = 'Hacer admin';
-        btn.addEventListener('click', function(){
-          u.role = 'admin';
-          persistDB();
-          renderAdminPanel();
-        });
-      }
+        } catch(err){
+          btn.disabled = false;
+        }
+      });
       row.appendChild(btn);
     } else {
       row.appendChild(badge);
     }
+
+    // control para sumar o restar fichas directo (positivo suma, negativo resta)
+    const adjustWrap = document.createElement('div');
+    adjustWrap.style.cssText = 'display:flex; gap:6px; width:100%; margin-top:8px;';
+
+    const input = document.createElement('input');
+    input.type = 'number';
+    input.placeholder = 'ej: 500 o -200';
+    input.style.cssText = 'flex:1; padding:8px; background:var(--panel2); border:1px solid #333; border-radius:6px; color:var(--text); font-family:inherit; font-size:13px;';
+
+    const applyBtn = document.createElement('button');
+    applyBtn.className = 'admin-role-btn';
+    applyBtn.textContent = 'Aplicar';
+    applyBtn.addEventListener('click', async function(){
+      const amount = parseInt(input.value, 10);
+      if(isNaN(amount) || amount === 0) return;
+      applyBtn.disabled = true;
+      try{
+        if(hasBackend){
+          await apiCall('/api/admin/adjust-balance', { requesterEmail: currentUser.email, targetEmail: u.email, amount: amount });
+        } else if(localDB.users[u.email]){
+          localDB.users[u.email].balance = Math.max(0, localDB.users[u.email].balance + amount);
+        }
+        renderAdminPanel();
+      } catch(err){
+        applyBtn.disabled = false;
+      }
+    });
+
+    adjustWrap.appendChild(input);
+    adjustWrap.appendChild(applyBtn);
+    row.appendChild(adjustWrap);
 
     list.appendChild(row);
   });
