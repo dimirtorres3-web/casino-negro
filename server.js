@@ -59,6 +59,18 @@ async function initDB(){
     );
   `);
 
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS balance_adjustments (
+      id SERIAL PRIMARY KEY,
+      admin_email TEXT NOT NULL,
+      admin_name TEXT NOT NULL,
+      target_email TEXT NOT NULL,
+      target_name TEXT NOT NULL,
+      amount INTEGER NOT NULL,
+      created_at TIMESTAMP DEFAULT NOW()
+    );
+  `);
+
   const existing = await pool.query('SELECT id FROM users WHERE email = $1', [SUPERADMIN_EMAIL]);
   if(existing.rows.length === 0){
     const hash = await bcrypt.hash(SUPERADMIN_PASSWORD, 10);
@@ -225,7 +237,9 @@ app.post('/api/role', async (req, res) => {
 
 // ---- AJUSTAR FICHAS DE UN JUGADOR DIRECTO (solo admin o súper admin) ----
 // El admin suma o resta fichas de la cuenta de cualquier jugador él mismo,
-// según lo que le paguen o le transfieran por fuera de la app.
+// según lo que le paguen o le transfieran por fuera de la app. Queda
+// registrado en "balance_adjustments" para que el súper admin pueda
+// controlar cuánto cargó y pagó cada administrador, y a quién.
 app.post('/api/admin/adjust-balance', async (req, res) => {
   try{
     const requesterEmail = (req.body.requesterEmail || '').trim().toLowerCase();
@@ -234,18 +248,46 @@ app.post('/api/admin/adjust-balance', async (req, res) => {
 
     if(isNaN(amount) || amount === 0) return res.status(400).json({ error: 'Ingresá un monto válido' });
 
-    const requester = await pool.query('SELECT role FROM users WHERE email = $1', [requesterEmail]);
+    const requester = await pool.query('SELECT name, role FROM users WHERE email = $1', [requesterEmail]);
     if(requester.rows.length === 0 || !['admin', 'superadmin'].includes(requester.rows[0].role)){
       return res.status(403).json({ error: 'No autorizado' });
     }
+
+    const targetBefore = await pool.query('SELECT name FROM users WHERE email = $1', [targetEmail]);
+    if(targetBefore.rows.length === 0) return res.status(400).json({ error: 'Cuenta no encontrada' });
 
     const result = await pool.query(
       'UPDATE users SET balance = GREATEST(balance + $1, 0) WHERE email = $2 RETURNING balance',
       [amount, targetEmail]
     );
-    if(result.rows.length === 0) return res.status(400).json({ error: 'Cuenta no encontrada' });
+
+    await pool.query(
+      'INSERT INTO balance_adjustments (admin_email, admin_name, target_email, target_name, amount) VALUES ($1,$2,$3,$4,$5)',
+      [requesterEmail, requester.rows[0].name, targetEmail, targetBefore.rows[0].name, amount]
+    );
 
     res.json({ ok: true, newBalance: result.rows[0].balance });
+  }catch(err){
+    console.error(err);
+    res.status(500).json({ error: 'Error del servidor' });
+  }
+});
+
+// ---- HISTORIAL DE CARGAS/PAGOS (solo el súper admin puede verlo) ----
+// Sirve para controlar cuánto cargó y pagó cada administrador, y a quién,
+// así el súper admin puede hacer arreglo de cuentas con cada uno.
+app.get('/api/admin/ledger', async (req, res) => {
+  try{
+    const requesterEmail = (req.query.requesterEmail || '').trim().toLowerCase();
+    const requester = await pool.query('SELECT role FROM users WHERE email = $1', [requesterEmail]);
+    if(requester.rows.length === 0 || requester.rows[0].role !== 'superadmin'){
+      return res.status(403).json({ error: 'Solo el súper admin puede ver el historial' });
+    }
+
+    const result = await pool.query(
+      'SELECT admin_email, admin_name, target_email, target_name, amount, created_at FROM balance_adjustments ORDER BY created_at DESC LIMIT 500'
+    );
+    res.json({ ok: true, movements: result.rows });
   }catch(err){
     console.error(err);
     res.status(500).json({ error: 'Error del servidor' });

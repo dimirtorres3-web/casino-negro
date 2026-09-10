@@ -1377,6 +1377,50 @@
     cursor:pointer;
     white-space:nowrap;
   }
+  .ledger-admin-card{
+    background: linear-gradient(160deg, var(--panel2), #100820);
+    border: 1px solid var(--gold-dim);
+    border-radius: 12px;
+    padding: 14px 16px;
+    margin-bottom: 12px;
+  }
+  .ledger-admin-name{
+    font-size: 14px;
+    color: var(--gold);
+    font-weight: bold;
+    margin-bottom: 8px;
+  }
+  .ledger-totals{
+    display:flex;
+    gap: 10px;
+  }
+  .ledger-total-box{
+    flex:1;
+    background: #05000c;
+    border-radius: 8px;
+    padding: 8px;
+    text-align:center;
+  }
+  .ledger-total-box .lbl{ font-size: 10px; color: var(--text-dim); letter-spacing:0.5px; }
+  .ledger-total-box .val{ font-size: 15px; font-weight:bold; margin-top:2px; }
+  .ledger-total-box.cargado .val{ color: var(--green); }
+  .ledger-total-box.pagado .val{ color: var(--red); }
+  .ledger-row{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    background: var(--panel);
+    border: 1px solid #2a2a2a;
+    border-radius: 8px;
+    padding: 10px 12px;
+    margin-bottom: 8px;
+    font-size: 12px;
+  }
+  .ledger-row-info{ color: var(--text-dim); }
+  .ledger-row-info b{ color: var(--text); }
+  .ledger-row-amount{ font-weight:bold; white-space:nowrap; margin-left:8px; }
+  .ledger-row-amount.pos{ color: var(--green); }
+  .ledger-row-amount.neg{ color: var(--red); }
   .recharge-row{
     display:flex;
     align-items:center;
@@ -1525,7 +1569,23 @@
       </div>
     </div>
     <div class="game-title-label">Panel de administración</div>
+    <button class="admin-btn hidden" id="ledgerBtn" style="margin-bottom:16px;">📒 HISTORIAL DE CARGAS Y PAGOS</button>
     <div id="adminUserList"></div>
+  </div>
+
+  <!-- ============ PANTALLA: HISTORIAL DE CARGAS/PAGOS ============ -->
+  <div id="screenLedger" class="screen">
+    <div class="topbar-inline">
+      <button class="back-btn" id="ledgerBackBtn">← Volver</button>
+      <div class="topbar-balance">
+        <div class="chip-icon"></div>
+        <span class="balance-value">1000</span>
+      </div>
+    </div>
+    <div class="game-title-label">Historial de cargas y pagos</div>
+    <div id="ledgerSummary"></div>
+    <div class="game-title-label" style="font-size:12px; margin-top:16px;">Movimientos recientes</div>
+    <div id="ledgerList"></div>
   </div>
 
   <!-- ============ PANTALLA: JUEGO ============ -->
@@ -1570,7 +1630,7 @@
           <div class="wheel-hub"></div>
         </div>
         <div class="result-number zero" id="resultNumber">-</div>
-        <div class="roulette-msg" id="rouletteMsg">Elegí tu apuesta</div>
+        <div class="roulette-msg" id="rouletteMsg">Elegí una o más apuestas (rojo, negro, números...)</div>
       </div>
 
       <div class="bet-options">
@@ -1582,9 +1642,10 @@
 
       <div class="numbers-grid" id="numbersGrid"></div>
 
+      <div style="text-align:center; font-size:11px; color:var(--text-dim); margin-bottom:10px;">La ficha se aplica a cada casilla marcada por separado</div>
       <div class="bet-row">
         <button id="rBetMinus">−</button>
-        <div class="bet-amount"><input type="number" id="rouletteBet" class="bet-input" value="10" min="1"> fichas</div>
+        <div class="bet-amount"><input type="number" id="rouletteBet" class="bet-input" value="10" min="1"> fichas c/u</div>
         <button id="rBetPlus">+</button>
       </div>
       <button class="spin-btn" id="spinRouletteBtn">JUGAR</button>
@@ -1934,7 +1995,7 @@ function bindBetInput(minusId, plusId, inputId, getBet, setBet){
 let balance = 1000;
 let slotBet = 10;
 let rouletteBet = 10;
-let selectedBet = null;
+let selectedBets = [];
 
 const balanceEls = document.querySelectorAll('.balance-value');
 function updateBalance(){
@@ -2140,6 +2201,13 @@ function loginAs(user){
   } else {
     adminBtn.classList.add('hidden');
   }
+
+  const ledgerBtn = document.getElementById('ledgerBtn');
+  if(user.role === 'superadmin'){
+    ledgerBtn.classList.remove('hidden');
+  } else {
+    ledgerBtn.classList.add('hidden');
+  }
 }
 
 // Al abrir o recargar la página: la pantalla de carga queda activa (nunca se
@@ -2185,6 +2253,7 @@ document.getElementById('logoutBtn').addEventListener('click', function(){
   document.getElementById('screenLobby').classList.remove('active');
   document.getElementById('screenGame').classList.remove('active');
   document.getElementById('screenAdmin').classList.remove('active');
+  document.getElementById('screenLedger').classList.remove('active');
   document.getElementById('screenAuth').classList.add('active');
   document.getElementById('loginEmail').value = '';
   document.getElementById('loginPassword').value = '';
@@ -2329,6 +2398,99 @@ document.getElementById('adminBackBtn').addEventListener('click', ()=>{
   document.getElementById('screenLobby').classList.add('active');
 });
 
+// ---- HISTORIAL DE CARGAS Y PAGOS (solo súper admin) ----
+function fmtGuaranies(n){
+  return Math.round(n).toLocaleString('es-PY');
+}
+function fmtDate(iso){
+  const d = new Date(iso);
+  return d.toLocaleDateString('es-PY') + ' ' + d.toLocaleTimeString('es-PY', {hour:'2-digit', minute:'2-digit'});
+}
+function dayKey(iso){
+  return new Date(iso).toLocaleDateString('es-PY');
+}
+
+async function renderLedger(){
+  const summaryEl = document.getElementById('ledgerSummary');
+  const listEl = document.getElementById('ledgerList');
+  summaryEl.innerHTML = 'Cargando...';
+  listEl.innerHTML = '';
+
+  let movements = [];
+  try{
+    const res = await fetch('/api/admin/ledger?requesterEmail=' + encodeURIComponent(currentUser.email));
+    const data = await res.json();
+    if(!res.ok) throw new Error(data.error || 'Error');
+    movements = data.movements;
+  }catch(err){
+    summaryEl.innerHTML = 'No se pudo cargar el historial';
+    return;
+  }
+
+  if(movements.length === 0){
+    summaryEl.innerHTML = '<div class="recharge-empty">Todavía no hay movimientos registrados</div>';
+    return;
+  }
+
+  // agrupar por administrador y por día
+  const byAdmin = {};
+  movements.forEach(m=>{
+    if(!byAdmin[m.admin_email]) byAdmin[m.admin_email] = { name: m.admin_name, byDay: {}, totalCargado: 0, totalPagado: 0 };
+    const a = byAdmin[m.admin_email];
+    const dk = dayKey(m.created_at);
+    if(!a.byDay[dk]) a.byDay[dk] = { cargado: 0, pagado: 0 };
+    if(m.amount > 0){
+      a.byDay[dk].cargado += m.amount;
+      a.totalCargado += m.amount;
+    } else {
+      a.byDay[dk].pagado += Math.abs(m.amount);
+      a.totalPagado += Math.abs(m.amount);
+    }
+  });
+
+  summaryEl.innerHTML = '';
+  Object.values(byAdmin).forEach(a=>{
+    const card = document.createElement('div');
+    card.className = 'ledger-admin-card';
+    let daysHtml = '';
+    Object.keys(a.byDay).forEach(dk=>{
+      const d = a.byDay[dk];
+      daysHtml += '<div style="display:flex; justify-content:space-between; font-size:11px; color:var(--text-dim); margin-top:4px;">' +
+        '<span>' + dk + '</span>' +
+        '<span>Cargó Gs. ' + fmtGuaranies(d.cargado) + ' · Pagó Gs. ' + fmtGuaranies(d.pagado) + '</span></div>';
+    });
+    card.innerHTML =
+      '<div class="ledger-admin-name">' + a.name + '</div>' +
+      '<div class="ledger-totals">' +
+        '<div class="ledger-total-box cargado"><div class="lbl">TOTAL CARGADO</div><div class="val">Gs. ' + fmtGuaranies(a.totalCargado) + '</div></div>' +
+        '<div class="ledger-total-box pagado"><div class="lbl">TOTAL PAGADO</div><div class="val">Gs. ' + fmtGuaranies(a.totalPagado) + '</div></div>' +
+      '</div>' + daysHtml;
+    summaryEl.appendChild(card);
+  });
+
+  listEl.innerHTML = '';
+  movements.forEach(m=>{
+    const row = document.createElement('div');
+    row.className = 'ledger-row';
+    const isPos = m.amount > 0;
+    row.innerHTML =
+      '<div class="ledger-row-info">' + fmtDate(m.created_at) + '<br><b>' + m.admin_name + '</b> → ' + m.target_name + '</div>' +
+      '<div class="ledger-row-amount ' + (isPos ? 'pos' : 'neg') + '">' + (isPos ? '+' : '') + fmtGuaranies(m.amount) + '</div>';
+    listEl.appendChild(row);
+  });
+}
+
+document.getElementById('ledgerBtn').addEventListener('click', function(){
+  renderLedger();
+  document.getElementById('screenAdmin').classList.remove('active');
+  document.getElementById('screenLedger').classList.add('active');
+});
+
+document.getElementById('ledgerBackBtn').addEventListener('click', function(){
+  document.getElementById('screenLedger').classList.remove('active');
+  document.getElementById('screenAdmin').classList.add('active');
+});
+
 // ---- NAVEGACIÓN LOBBY <-> JUEGO ----
 const gameTitles = {
   slots: 'Tragamonedas', roulette: 'Ruleta', blackjack: 'Blackjack', dice: 'Dados',
@@ -2464,22 +2626,30 @@ for(let n=1;n<=36;n++){
 
 function clearSelection(){
   document.querySelectorAll('.bet-option, .num-btn').forEach(el=>el.classList.remove('selected'));
-  selectedBet = null;
+  selectedBets = [];
+}
+
+function toggleBet(bet, el){
+  // si ya está esa misma apuesta marcada, la saco; si no, la agrego a la lista
+  const idx = selectedBets.findIndex(b => b.type === bet.type && b.value === bet.value);
+  if(idx >= 0){
+    selectedBets.splice(idx, 1);
+    el.classList.remove('selected');
+  } else {
+    selectedBets.push(bet);
+    el.classList.add('selected');
+  }
 }
 
 document.querySelectorAll('.bet-option').forEach(opt=>{
   opt.addEventListener('click', ()=>{
-    clearSelection();
-    opt.classList.add('selected');
-    selectedBet = { type: opt.dataset.bet };
+    toggleBet({ type: opt.dataset.bet }, opt);
   });
 });
 
 numbersGrid.querySelectorAll('.num-btn').forEach(btn=>{
   btn.addEventListener('click', ()=>{
-    clearSelection();
-    btn.classList.add('selected');
-    selectedBet = { type: 'number', value: parseInt(btn.dataset.num) };
+    toggleBet({ type: 'number', value: parseInt(btn.dataset.num) }, btn);
   });
 });
 
@@ -2522,15 +2692,16 @@ const spinRouletteBtn = document.getElementById('spinRouletteBtn');
 let wheelRotation = 0;
 
 spinRouletteBtn.addEventListener('click', ()=>{
-  if(!selectedBet){
-    rouletteMsg.textContent = 'Elegí una apuesta primero';
+  if(selectedBets.length === 0){
+    rouletteMsg.textContent = 'Elegí al menos una apuesta primero';
     return;
   }
-  if(balance < rouletteBet){
-    rouletteMsg.textContent = 'Saldo insuficiente';
+  const totalCost = rouletteBet * selectedBets.length;
+  if(balance < totalCost){
+    rouletteMsg.textContent = 'Saldo insuficiente para todas tus apuestas';
     return;
   }
-  balance -= rouletteBet;
+  balance -= totalCost;
   updateBalance();
   spinRouletteBtn.disabled = true;
   rouletteMsg.textContent = 'La bolita gira...';
@@ -2549,25 +2720,36 @@ spinRouletteBtn.addEventListener('click', ()=>{
     resultNumber.className = 'result-number ' + color;
     resultNumber.textContent = landing;
 
-    let win = 0;
-    const isExactNumberBet = selectedBet.type === 'number' && selectedBet.value === landing;
-    if(isExactNumberBet){
-      win = rouletteBet * 36; // 35 a 1 de ganancia + la apuesta devuelta = pago real de ruleta europea
-    } else if(selectedBet.type === 'red' && color === 'red'){
-      win = rouletteBet * 2;
-    } else if(selectedBet.type === 'black' && color === 'black'){
-      win = rouletteBet * 2;
-    } else if(selectedBet.type === 'even' && landing !== 0 && landing % 2 === 0){
-      win = rouletteBet * 2;
-    } else if(selectedBet.type === 'odd' && landing % 2 === 1){
-      win = rouletteBet * 2;
-    }
+    let totalWin = 0;
+    let winCount = 0;
 
-    // si acertaste el número exacto, cobra siempre — la dificultad por apuesta
-    // alta solo se aplica a las apuestas de color/par/impar, no al número pleno
-    if(win > 0 && (isExactNumberBet || applyBetDifficulty(rouletteBet, true))){
-      balance += win;
-      rouletteMsg.textContent = 'Cayó en ' + landing + ' — ¡Ganaste ' + win + ' fichas!';
+    selectedBets.forEach(bet=>{
+      let win = 0;
+      const isExactNumberBet = bet.type === 'number' && bet.value === landing;
+      if(isExactNumberBet){
+        win = rouletteBet * 36; // 35 a 1 de ganancia + la apuesta devuelta = pago real de ruleta europea
+      } else if(bet.type === 'red' && color === 'red'){
+        win = rouletteBet * 2;
+      } else if(bet.type === 'black' && color === 'black'){
+        win = rouletteBet * 2;
+      } else if(bet.type === 'even' && landing !== 0 && landing % 2 === 0){
+        win = rouletteBet * 2;
+      } else if(bet.type === 'odd' && landing % 2 === 1){
+        win = rouletteBet * 2;
+      }
+
+      // si acertaste el número exacto, cobra siempre — la dificultad por apuesta
+      // alta solo se aplica a las apuestas de color/par/impar, no al número pleno
+      if(win > 0 && (isExactNumberBet || applyBetDifficulty(rouletteBet, true))){
+        totalWin += win;
+        winCount++;
+      }
+    });
+
+    if(totalWin > 0){
+      balance += totalWin;
+      const detalle = winCount > 1 ? ' (' + winCount + ' apuestas ganadoras)' : '';
+      rouletteMsg.textContent = 'Cayó en ' + landing + ' — ¡Ganaste ' + totalWin + ' fichas!' + detalle;
       playWin(); playCoin();
     } else {
       rouletteMsg.textContent = 'Cayó en ' + landing + ' — Sin premio';
