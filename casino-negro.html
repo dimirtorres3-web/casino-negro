@@ -6,15 +6,17 @@
 <title>Casino Online</title>
 <style>
   :root{
-    --bg: #0a0a0a;
-    --panel: #141414;
-    --panel2: #1c1c1c;
-    --gold: #d97757;
-    --gold-dim: #a85a3f;
+    --bg: #0a0118;
+    --panel: #170a2a;
+    --panel2: #1e0f38;
+    --gold: #ffd23f;
+    --gold-dim: #a86c10;
+    --neon: #b91cd6;
+    --neon-pink: #ff3c8c;
     --red: #b8172c;
     --green: #14663a;
-    --text: #ece7d8;
-    --text-dim: #8f8a7c;
+    --text: #ece7f5;
+    --text-dim: #a08cc0;
   }
   *{box-sizing:border-box; -webkit-tap-highlight-color: transparent;}
   html{
@@ -24,8 +26,9 @@
   body{
     margin:0;
     background:
-      radial-gradient(ellipse 900px 500px at 50% -10%, rgba(217,119,87,0.10), transparent 60%),
-      radial-gradient(circle at 15% 90%, rgba(168,90,63,0.06), transparent 45%),
+      radial-gradient(ellipse 900px 700px at 50% 0%, rgba(185,28,214,0.30), transparent 60%),
+      radial-gradient(ellipse 800px 800px at 90% 90%, rgba(255,210,63,0.10), transparent 55%),
+      radial-gradient(ellipse 700px 600px at 5% 70%, rgba(255,60,140,0.14), transparent 55%),
       var(--bg);
     background-attachment: fixed;
     color: var(--text);
@@ -58,7 +61,7 @@
     transform: translateX(-50%);
     width: 120px; height:1px;
     background: linear-gradient(90deg, transparent, var(--gold), transparent);
-    box-shadow: 0 0 8px rgba(217,119,87,0.6);
+    box-shadow: 0 0 8px rgba(255,210,63,0.6);
   }
   header h1{
     font-size: 32px;
@@ -66,7 +69,7 @@
     margin: 0 0 6px;
     color: var(--gold);
     font-weight: normal;
-    text-shadow: 0 0 18px rgba(217,119,87,0.35), 0 2px 3px rgba(0,0,0,0.6);
+    text-shadow: 0 0 18px rgba(255,210,63,0.35), 0 2px 3px rgba(0,0,0,0.6);
   }
   header p{
     color: var(--text-dim);
@@ -88,8 +91,8 @@
   }
   .balance-bar .chip-icon{
     width:22px;height:22px;border-radius:50%;
-    background: radial-gradient(circle at 35% 35%, #eeab8f, var(--gold) 60%, var(--gold-dim));
-    border: 2px solid #3a1c10;
+    background: radial-gradient(circle at 35% 35%, #ffe58a, var(--gold) 60%, var(--gold-dim));
+    border: 2px solid #5c3a00;
     flex-shrink:0;
   }
   .balance-bar span{
@@ -212,8 +215,8 @@
     display:block;
     width: 100%;
     padding: 15px;
-    background: linear-gradient(180deg, #f0b291, var(--gold) 55%, var(--gold-dim));
-    color: #2b1208;
+    background: linear-gradient(180deg, #ffe58a, var(--gold) 55%, var(--gold-dim));
+    color: #3a2400;
     border: none;
     border-top: 1px solid rgba(255,255,255,0.4);
     border-radius: 10px;
@@ -222,12 +225,12 @@
     font-weight:bold;
     letter-spacing: 2px;
     cursor:pointer;
-    box-shadow: 0 4px 12px rgba(217,119,87,0.35), 0 2px 4px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.5);
+    box-shadow: 0 4px 12px rgba(255,210,63,0.35), 0 2px 4px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.5);
     transition: all .12s;
   }
   .spin-btn:active{
     transform: scale(0.98) translateY(1px);
-    box-shadow: 0 2px 6px rgba(217,119,87,0.3), inset 0 1px 0 rgba(255,255,255,0.3);
+    box-shadow: 0 2px 6px rgba(255,210,63,0.3), inset 0 1px 0 rgba(255,255,255,0.3);
   }
   .spin-btn:disabled{
     opacity: 0.5;
@@ -279,7 +282,7 @@
     width: 22px; height:22px;
     border-radius:50%;
     background: var(--gold);
-    border: 2px solid #3a1c10;
+    border: 2px solid #5c3a00;
     transform: translate(-50%,-50%);
     z-index: 3;
   }
@@ -338,7 +341,7 @@
     border-color: var(--gold);
     color: var(--gold);
     background: linear-gradient(160deg, #2a2010, #17130a);
-    box-shadow: 0 0 10px rgba(217,119,87,0.4), inset 0 1px 0 rgba(255,255,255,0.06);
+    box-shadow: 0 0 10px rgba(255,210,63,0.4), inset 0 1px 0 rgba(255,255,255,0.06);
   }
   .bet-option .payout{
     display:block;
@@ -461,8 +464,8 @@
   .card.red-suit{ color: var(--red); }
   .card.black-suit{ color: #111; }
   .card.back{
-    background: repeating-linear-gradient(45deg, var(--gold-dim), var(--gold-dim) 4px, #7a3f26 4px, #7a3f26 8px);
-    border: 2px solid #3a1c10;
+    background: repeating-linear-gradient(45deg, var(--gold-dim), var(--gold-dim) 4px, #8a5a10 4px, #8a5a10 8px);
+    border: 2px solid #5c3a00;
   }
   .card .suit{ font-size: 14px; margin-top: 2px; }
   .bj-msg{
@@ -660,8 +663,8 @@
     border: none;
   }
   #aviatorBetBtn{
-    background: linear-gradient(180deg, #e6987a, var(--gold));
-    color: #2b1208;
+    background: linear-gradient(180deg, #ffdb7a, var(--gold));
+    color: #3a2400;
   }
   #aviatorCashoutBtn{
     background: var(--green);
@@ -735,7 +738,7 @@
     cursor:pointer;
     border: none;
   }
-  #minesPlayBtn{ background: linear-gradient(180deg, #e6987a, var(--gold)); color:#2b1208; }
+  #minesPlayBtn{ background: linear-gradient(180deg, #ffdb7a, var(--gold)); color:#3a2400; }
   #minesCashoutBtn{ background: var(--green); color:#fff; }
   .mines-actions button:disabled{ opacity:0.4; cursor:not-allowed; }
 
@@ -807,7 +810,7 @@
     cursor:pointer;
     border: none;
   }
-  #pokerDealBtn{ background: linear-gradient(180deg, #e6987a, var(--gold)); color:#2b1208; }
+  #pokerDealBtn{ background: linear-gradient(180deg, #ffdb7a, var(--gold)); color:#3a2400; }
   #pokerDrawBtn{ background: var(--green); color:#fff; }
   .poker-actions button:disabled{ opacity:0.4; cursor:not-allowed; }
 
@@ -904,7 +907,7 @@
   }
   .plinko-slot.hit{
     background: var(--gold);
-    color: #2b1208;
+    color: #3a2400;
     font-weight:bold;
   }
   .plinko-msg{
@@ -979,13 +982,13 @@
   }
   .premium-cell.win{
     border-color: var(--gold);
-    box-shadow: 0 0 12px rgba(217,119,87,0.7);
+    box-shadow: 0 0 12px rgba(255,210,63,0.7);
     background: linear-gradient(160deg, #3a2410, #1a1108);
   }
   .premium-cell.jackpot-symbol{
     background: linear-gradient(160deg, #3a2a12, #1c1508);
     border-color: var(--gold);
-    box-shadow: inset 0 0 10px rgba(217,119,87,0.35);
+    box-shadow: inset 0 0 10px rgba(255,210,63,0.35);
     text-shadow: 0 0 8px rgba(255,200,150,0.8);
   }
   .premium-payline{
@@ -1032,9 +1035,9 @@
   .premium-spin-btn{
     width: 56px; height: 56px;
     border-radius: 50%;
-    background: radial-gradient(circle at 35% 30%, #e6987a, var(--gold) 55%, var(--gold-dim));
+    background: radial-gradient(circle at 35% 30%, #ffdb7a, var(--gold) 55%, var(--gold-dim));
     border: 3px solid #1a1108;
-    color: #2b1208;
+    color: #3a2400;
     font-size: 24px;
     display:flex;
     align-items:center;
@@ -1078,6 +1081,7 @@
   /* ---- SCREENS / AUTH / LOBBY / TOPBAR ---- */
   .screen{ display:none; }
   .screen.active{ display:block; }
+  @keyframes spin{ to{ transform: rotate(360deg); } }
 
   .auth-card{
     background: linear-gradient(165deg, #1a1512, #0d0d0d);
@@ -1086,7 +1090,7 @@
     padding: 30px 22px;
     max-width: 380px;
     margin: 40px auto 0;
-    box-shadow: 0 12px 32px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.04), 0 0 0 1px rgba(217,119,87,0.08);
+    box-shadow: 0 12px 32px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.04), 0 0 0 1px rgba(255,210,63,0.08);
   }
   .auth-tabs{
     display:flex;
@@ -1107,7 +1111,7 @@
   }
   .auth-tabs button.active{
     background: var(--gold);
-    color: #2b1208;
+    color: #3a2400;
     border-color: var(--gold);
   }
   .auth-form{ display:none; flex-direction:column; gap: 12px; }
@@ -1150,8 +1154,8 @@
   }
   .auth-submit{
     padding: 14px;
-    background: linear-gradient(180deg, #e6987a, var(--gold));
-    color: #2b1208;
+    background: linear-gradient(180deg, #ffdb7a, var(--gold));
+    color: #3a2400;
     border: none;
     border-radius: 8px;
     font-family: inherit;
@@ -1217,13 +1221,13 @@
     color: var(--gold);
     font-size: 18px;
     font-weight:bold;
-    text-shadow: 0 0 10px rgba(217,119,87,0.3);
+    text-shadow: 0 0 10px rgba(255,210,63,0.3);
   }
   .topbar-balance .chip-icon{
     width:22px;height:22px;border-radius:50%;
-    background: radial-gradient(circle at 35% 35%, #eeab8f, var(--gold) 60%, var(--gold-dim));
-    border: 2px solid #3a1c10;
-    box-shadow: 0 0 6px rgba(217,119,87,0.5), 0 2px 3px rgba(0,0,0,0.4);
+    background: radial-gradient(circle at 35% 35%, #ffe58a, var(--gold) 60%, var(--gold-dim));
+    border: 2px solid #5c3a00;
+    box-shadow: 0 0 6px rgba(255,210,63,0.5), 0 2px 3px rgba(0,0,0,0.4);
     flex-shrink:0;
   }
   .topbar-user{
@@ -1285,13 +1289,13 @@
     position:absolute;
     inset: 0;
     border-radius: 16px;
-    box-shadow: inset 0 0 0 1px rgba(217,119,87,0.12);
+    box-shadow: inset 0 0 0 1px rgba(255,210,63,0.12);
     pointer-events:none;
   }
   .lobby-card:active{
     transform: scale(0.96);
     border-color: var(--gold);
-    box-shadow: 0 2px 18px rgba(217,119,87,0.45);
+    box-shadow: 0 2px 18px rgba(255,210,63,0.45);
   }
   .lobby-card .icon-badge{
     width: 58px; height: 58px;
@@ -1302,7 +1306,7 @@
     align-items:center;
     justify-content:center;
     margin: 0 auto 12px;
-    box-shadow: inset 0 0 10px rgba(0,0,0,0.7), 0 0 14px rgba(217,119,87,0.18);
+    box-shadow: inset 0 0 10px rgba(0,0,0,0.7), 0 0 14px rgba(255,210,63,0.18);
   }
   .lobby-card .icon{
     font-size: 28px;
@@ -1359,7 +1363,7 @@
     letter-spacing: 0.5px;
     white-space:nowrap;
   }
-  .role-badge.superadmin{ background: var(--gold); color:#2b1208; }
+  .role-badge.superadmin{ background: var(--gold); color:#3a2400; }
   .role-badge.admin{ background: var(--panel2); color: var(--gold); border: 1px solid var(--gold-dim); }
   .role-badge.user{ background: var(--panel2); color: var(--text-dim); }
   .admin-role-btn{
@@ -1419,8 +1423,16 @@
 <body>
 <div class="wrap">
 
+  <!-- ============ PANTALLA: CARGANDO (mientras se confirma la sesión) ============ -->
+  <div id="screenLoading" class="screen active">
+    <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:80vh; gap:20px;">
+      <div style="width:46px; height:46px; border-radius:50%; border:3px solid #333; border-top-color:var(--gold); animation:spin 0.8s linear infinite;"></div>
+      <div style="color:var(--text-dim); font-size:13px; letter-spacing:1px;">Cargando...</div>
+    </div>
+  </div>
+
   <!-- ============ PANTALLA: LOGIN / REGISTRO ============ -->
-  <div id="screenAuth" class="screen active">
+  <div id="screenAuth" class="screen">
     <header>
       <h1>CASINO ONLINE</h1>
       <p>Iniciá sesión o creá tu cuenta</p>
@@ -1635,7 +1647,7 @@
     <div class="aviator-panel">
       <div class="aviator-graph" id="aviatorGraph">
         <svg viewBox="0 0 300 200" preserveAspectRatio="none">
-          <polyline id="aviatorLine" points="" fill="none" stroke="#d97757" stroke-width="3"/>
+          <polyline id="aviatorLine" points="" fill="none" stroke="#ffd23f" stroke-width="3"/>
         </svg>
         <div class="aviator-multiplier" id="aviatorMultiplier">1.00x</div>
         <div class="aviator-countdown" id="aviatorCountdown"></div>
@@ -1744,12 +1756,12 @@
       </div>
       <div class="premium-wheel-deco">
         <svg viewBox="0 0 240 130" xmlns="http://www.w3.org/2000/svg">
-          <path d="M20,120 A100,100 0 0,1 92,22" fill="none" stroke="#a85a3f" stroke-width="26"/>
+          <path d="M20,120 A100,100 0 0,1 92,22" fill="none" stroke="#a86c10" stroke-width="26"/>
           <path d="M92,22 A100,100 0 0,1 148,22" fill="none" stroke="#b8172c" stroke-width="26"/>
           <path d="M148,22 A100,100 0 0,1 220,120" fill="none" stroke="#14663a" stroke-width="26"/>
-          <text x="45" y="95" fill="#f0dcc8" font-size="15" font-family="Georgia, serif" text-anchor="middle" transform="rotate(-45 45 95)">25X</text>
+          <text x="45" y="95" fill="#f5e8b8" font-size="15" font-family="Georgia, serif" text-anchor="middle" transform="rotate(-45 45 95)">25X</text>
           <text x="120" y="18" fill="#fff3e6" font-size="17" font-family="Georgia, serif" font-weight="bold" text-anchor="middle">777X</text>
-          <text x="195" y="95" fill="#f0dcc8" font-size="15" font-family="Georgia, serif" text-anchor="middle" transform="rotate(45 195 95)">10X</text>
+          <text x="195" y="95" fill="#f5e8b8" font-size="15" font-family="Georgia, serif" text-anchor="middle" transform="rotate(45 195 95)">10X</text>
           <circle cx="120" cy="120" r="10" fill="var(--gold)" stroke="#1a1108" stroke-width="2"/>
         </svg>
       </div>
@@ -2118,6 +2130,7 @@ function loginAs(user){
   balance = user.balance;
   updateBalance();
   document.getElementById('lobbyUserName').textContent = user.name + (user.role !== 'user' ? ' (' + (user.role === 'superadmin' ? 'súper admin' : 'admin') + ')' : '');
+  document.getElementById('screenLoading').classList.remove('active');
   document.getElementById('screenAuth').classList.remove('active');
   document.getElementById('screenLobby').classList.add('active');
 
@@ -2129,12 +2142,17 @@ function loginAs(user){
   }
 }
 
-// Al abrir o recargar la página: si hay un pase de sesión guardado y todavía
-// es válido, entra directo al lobby sin pedir correo y contraseña de nuevo.
+// Al abrir o recargar la página: la pantalla de carga queda activa (nunca se
+// ve el login parpadeando) hasta saber con certeza si hay una sesión válida
+// o no — recién ahí se muestra el lobby o el login, nunca los dos seguidos.
+function showLoginScreen(){
+  document.getElementById('screenLoading').classList.remove('active');
+  document.getElementById('screenAuth').classList.add('active');
+}
 function tryRestoreSession(){
-  if(!hasBackend) return;
+  if(!hasBackend){ showLoginScreen(); return; }
   const token = getSessionToken();
-  if(!token) return;
+  if(!token){ showLoginScreen(); return; }
   fetch('/api/session/' + token).then(function(res){
     if(!res.ok) throw new Error('sesión vencida');
     return res.json();
@@ -2142,6 +2160,7 @@ function tryRestoreSession(){
     loginAs(data.user);
   }).catch(function(){
     clearSessionToken();
+    showLoginScreen();
   });
 }
 tryRestoreSession();
@@ -2531,7 +2550,8 @@ spinRouletteBtn.addEventListener('click', ()=>{
     resultNumber.textContent = landing;
 
     let win = 0;
-    if(selectedBet.type === 'number' && selectedBet.value === landing){
+    const isExactNumberBet = selectedBet.type === 'number' && selectedBet.value === landing;
+    if(isExactNumberBet){
       win = rouletteBet * 36; // 35 a 1 de ganancia + la apuesta devuelta = pago real de ruleta europea
     } else if(selectedBet.type === 'red' && color === 'red'){
       win = rouletteBet * 2;
@@ -2543,7 +2563,9 @@ spinRouletteBtn.addEventListener('click', ()=>{
       win = rouletteBet * 2;
     }
 
-    if(win > 0 && applyBetDifficulty(rouletteBet, true)){
+    // si acertaste el número exacto, cobra siempre — la dificultad por apuesta
+    // alta solo se aplica a las apuestas de color/par/impar, no al número pleno
+    if(win > 0 && (isExactNumberBet || applyBetDifficulty(rouletteBet, true))){
       balance += win;
       rouletteMsg.textContent = 'Cayó en ' + landing + ' — ¡Ganaste ' + win + ' fichas!';
       playWin(); playCoin();
@@ -2872,7 +2894,7 @@ function pushHistory(value, won){
 function resetGraph(){
   aviatorPoints = [{x:5, y:190}];
   aviatorLine.setAttribute('points', '5,190');
-  aviatorLine.setAttribute('stroke', '#d97757');
+  aviatorLine.setAttribute('stroke', '#ffd23f');
   aviatorPlaneEl.style.left = '1.5%';
   aviatorPlaneEl.style.top = '95%';
   aviatorPlaneEl.classList.remove('crashed');
