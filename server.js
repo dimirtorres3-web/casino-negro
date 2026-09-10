@@ -1,5 +1,6 @@
 const express = require('express');
 const path = require('path');
+const crypto = require('crypto');
 const { Pool } = require('pg');
 const bcrypt = require('bcryptjs');
 
@@ -32,6 +33,18 @@ const pool = new Pool({
 // TODO EMAIL: acá es donde hay que mandar el código real por correo
 // (por ejemplo con Resend o SendGrid) en vez de solo guardarlo en memoria.
 const pendingRegistrations = {};
+
+// Sesiones activas: token -> correo. El navegador guarda el token y lo manda
+// en cada visita para no tener que volver a pedir usuario y contraseña.
+// Si el servidor reinicia se pierden (hay que loguearse de nuevo esa vez),
+// pero sobrevive sin problema a que el jugador solo recargue la página.
+const sessions = {};
+
+function createSession(email){
+  const token = crypto.randomBytes(24).toString('hex');
+  sessions[token] = email;
+  return token;
+}
 
 async function initDB(){
   await pool.query(`
@@ -107,7 +120,8 @@ app.post('/api/verify', async (req, res) => {
     );
     delete pendingRegistrations[email];
 
-    res.json({ ok: true, user: publicUser(result.rows[0]) });
+    const token = createSession(result.rows[0].email);
+    res.json({ ok: true, user: publicUser(result.rows[0]), token });
   }catch(err){
     console.error(err);
     res.status(500).json({ error: 'Error del servidor' });
@@ -127,11 +141,35 @@ app.post('/api/login', async (req, res) => {
     const match = await bcrypt.compare(password, user.password_hash);
     if(!match) return res.status(400).json({ error: 'Correo o contraseña incorrectos' });
 
-    res.json({ ok: true, user: publicUser(user) });
+    const token = createSession(user.email);
+    res.json({ ok: true, user: publicUser(user), token });
   }catch(err){
     console.error(err);
     res.status(500).json({ error: 'Error del servidor' });
   }
+});
+
+// ---- RESTAURAR SESIÓN (al recargar la página, sin pedir contraseña de nuevo) ----
+app.get('/api/session/:token', async (req, res) => {
+  try{
+    const email = sessions[req.params.token];
+    if(!email) return res.status(401).json({ error: 'Sesión vencida' });
+
+    const result = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
+    if(result.rows.length === 0) return res.status(401).json({ error: 'Sesión vencida' });
+
+    res.json({ ok: true, user: publicUser(result.rows[0]) });
+  }catch(err){
+    console.error(err);
+    res.status(500).json({ error: 'Error del servidor' });
+  }
+});
+
+// ---- CERRAR SESIÓN ----
+app.post('/api/logout', (req, res) => {
+  const token = req.body.token;
+  if(token) delete sessions[token];
+  res.json({ ok: true });
 });
 
 // ---- GUARDAR SALDO ----

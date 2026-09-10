@@ -2039,6 +2039,17 @@ function generateCode(){
   return String(Math.floor(100000 + Math.random()*900000));
 }
 
+const SESSION_KEY = 'casino_session_token';
+function saveSessionToken(token){
+  try{ if(token) localStorage.setItem(SESSION_KEY, token); }catch(e){}
+}
+function clearSessionToken(){
+  try{ localStorage.removeItem(SESSION_KEY); }catch(e){}
+}
+function getSessionToken(){
+  try{ return localStorage.getItem(SESSION_KEY); }catch(e){ return null; }
+}
+
 async function doVerify(){
   const errEl = document.getElementById('verifyError');
   errEl.textContent = '';
@@ -2050,6 +2061,7 @@ async function doVerify(){
   try{
     if(hasBackend){
       const data = await apiCall('/api/verify', { email, code });
+      saveSessionToken(data.token);
       loginAs(data.user);
     } else {
       if(!localPendingRegistration || localPendingRegistration.email !== email) throw new Error('No hay un registro pendiente');
@@ -2080,6 +2092,7 @@ async function doLogin(){
   try{
     if(hasBackend){
       const data = await apiCall('/api/login', { email, password });
+      saveSessionToken(data.token);
       loginAs(data.user);
     } else {
       const u = localDB.users[email];
@@ -2116,6 +2129,23 @@ function loginAs(user){
   }
 }
 
+// Al abrir o recargar la página: si hay un pase de sesión guardado y todavía
+// es válido, entra directo al lobby sin pedir correo y contraseña de nuevo.
+function tryRestoreSession(){
+  if(!hasBackend) return;
+  const token = getSessionToken();
+  if(!token) return;
+  fetch('/api/session/' + token).then(function(res){
+    if(!res.ok) throw new Error('sesión vencida');
+    return res.json();
+  }).then(function(data){
+    loginAs(data.user);
+  }).catch(function(){
+    clearSessionToken();
+  });
+}
+tryRestoreSession();
+
 function saveBalance(){
   if(!currentUser) return;
   if(hasBackend){
@@ -2127,6 +2157,11 @@ function saveBalance(){
 
 document.getElementById('logoutBtn').addEventListener('click', function(){
   saveBalance();
+  if(hasBackend){
+    const token = getSessionToken();
+    if(token) apiCall('/api/logout', { token: token }).catch(function(){});
+  }
+  clearSessionToken();
   currentUser = null;
   document.getElementById('screenLobby').classList.remove('active');
   document.getElementById('screenGame').classList.remove('active');
