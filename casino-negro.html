@@ -187,6 +187,27 @@
     font-size: 18px;
     color: var(--text);
   }
+  .bet-input{
+    width: 64px;
+    text-align:center;
+    background: var(--panel2);
+    border: 1px solid var(--gold-dim);
+    border-radius: 6px;
+    color: var(--gold);
+    font-family: inherit;
+    font-size: 17px;
+    font-weight: bold;
+    padding: 4px 2px;
+    -moz-appearance: textfield;
+  }
+  .bet-input::-webkit-outer-spin-button,
+  .bet-input::-webkit-inner-spin-button{
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  .bet-input:focus{
+    outline: 1px solid var(--gold);
+  }
   .spin-btn{
     display:block;
     width: 100%;
@@ -1517,7 +1538,7 @@
       <div class="slot-msg" id="slotMsg">Elegí tu apuesta y girá</div>
       <div class="bet-row">
         <button id="betMinus">−</button>
-        <div class="bet-amount"><span id="slotBet">10</span> fichas</div>
+        <div class="bet-amount"><input type="number" id="slotBet" class="bet-input" value="10" min="1"> fichas</div>
         <button id="betPlus">+</button>
       </div>
       <button class="spin-btn" id="spinBtn">GIRAR</button>
@@ -1551,7 +1572,7 @@
 
       <div class="bet-row">
         <button id="rBetMinus">−</button>
-        <div class="bet-amount"><span id="rouletteBet">10</span> fichas</div>
+        <div class="bet-amount"><input type="number" id="rouletteBet" class="bet-input" value="10" min="1"> fichas</div>
         <button id="rBetPlus">+</button>
       </div>
       <button class="spin-btn" id="spinRouletteBtn">JUGAR</button>
@@ -1575,7 +1596,7 @@
       <div class="bj-msg" id="bjMsg">Elegí tu apuesta y repartí</div>
       <div class="bet-row">
         <button id="bjBetMinus">−</button>
-        <div class="bet-amount"><span id="bjBet">10</span> fichas</div>
+        <div class="bet-amount"><input type="number" id="bjBet" class="bet-input" value="10" min="1"> fichas</div>
         <button id="bjBetPlus">+</button>
       </div>
       <div class="bj-actions">
@@ -1603,7 +1624,7 @@
       </div>
       <div class="bet-row">
         <button id="diceBetMinus">−</button>
-        <div class="bet-amount"><span id="diceBet">10</span> fichas</div>
+        <div class="bet-amount"><input type="number" id="diceBet" class="bet-input" value="10" min="1"> fichas</div>
         <button id="diceBetPlus">+</button>
       </div>
       <button class="spin-btn" id="rollDiceBtn">TIRAR</button>
@@ -1624,7 +1645,7 @@
       <div class="aviator-msg" id="aviatorMsg">Esperando la próxima ronda...</div>
       <div class="bet-row">
         <button id="avBetMinus">−</button>
-        <div class="bet-amount"><span id="aviatorBet">10</span> fichas</div>
+        <div class="bet-amount"><input type="number" id="aviatorBet" class="bet-input" value="10" min="1"> fichas</div>
         <button id="avBetPlus">+</button>
       </div>
       <div class="aviator-actions">
@@ -1645,7 +1666,7 @@
       <div class="mines-msg" id="minesMsg">Elegí minas y apuesta, después jugá</div>
       <div class="bet-row">
         <button id="minesBetMinus">−</button>
-        <div class="bet-amount"><span id="minesBet">10</span> fichas</div>
+        <div class="bet-amount"><input type="number" id="minesBet" class="bet-input" value="10" min="1"> fichas</div>
         <button id="minesBetPlus">+</button>
       </div>
       <div class="mines-actions">
@@ -1661,7 +1682,7 @@
       <div class="poker-msg" id="pokerMsg">Repartí para empezar</div>
       <div class="bet-row">
         <button id="pokerBetMinus">−</button>
-        <div class="bet-amount"><span id="pokerBet">10</span> fichas</div>
+        <div class="bet-amount"><input type="number" id="pokerBet" class="bet-input" value="10" min="1"> fichas</div>
         <button id="pokerBetPlus">+</button>
       </div>
       <div class="poker-actions">
@@ -1691,7 +1712,7 @@
       </div>
       <div class="bet-row">
         <button id="baccBetMinus">−</button>
-        <div class="bet-amount"><span id="baccBet">10</span> fichas</div>
+        <div class="bet-amount"><input type="number" id="baccBet" class="bet-input" value="10" min="1"> fichas</div>
         <button id="baccBetPlus">+</button>
       </div>
       <button class="spin-btn" id="baccDealBtn">REPARTIR</button>
@@ -1708,7 +1729,7 @@
       <div class="plinko-msg" id="plinkoMsg">Soltá la bolita</div>
       <div class="bet-row">
         <button id="plinkoBetMinus">−</button>
-        <div class="bet-amount"><span id="plinkoBet">10</span> fichas</div>
+        <div class="bet-amount"><input type="number" id="plinkoBet" class="bet-input" value="10" min="1"> fichas</div>
         <button id="plinkoBetPlus">+</button>
       </div>
       <button class="spin-btn" id="plinkoDropBtn">SOLTAR</button>
@@ -1746,7 +1767,7 @@
           <button id="premiumBetMinus">−</button>
           <div class="premium-stat">
             <span class="label">Apuesta</span>
-            <span class="value" id="premiumBet">10</span>
+            <input type="number" class="value bet-input" id="premiumBet" value="10" min="1">
           </div>
           <button id="premiumBetPlus">+</button>
         </div>
@@ -1871,6 +1892,31 @@ function applyBetDifficulty(betAmount, wouldWin){
   const penalty = betDifficultyPenalty(betAmount);
   if(penalty > 0 && Math.random() < penalty) return false;
   return true;
+}
+
+// Conecta un campo de apuesta editable con sus botones +/-: el jugador puede
+// escribir cualquier monto directo (desde 1 ficha, sin tope fijo más que su saldo).
+function bindBetInput(minusId, plusId, inputId, getBet, setBet){
+  const input = document.getElementById(inputId);
+  function clamp(v){
+    v = parseInt(v, 10);
+    if(isNaN(v) || v < 1) v = 1;
+    if(v > balance && balance >= 1) v = balance;
+    return v;
+  }
+  document.getElementById(minusId).addEventListener('click', ()=>{
+    setBet(clamp(getBet()-5));
+    input.value = getBet();
+  });
+  document.getElementById(plusId).addEventListener('click', ()=>{
+    setBet(clamp(getBet()+5));
+    input.value = getBet();
+  });
+  input.addEventListener('change', ()=>{
+    const v = clamp(input.value);
+    setBet(v);
+    input.value = v;
+  });
 }
 
 let balance = 1000;
@@ -2278,14 +2324,7 @@ function pickSymbol(){
   return symbols[0];
 }
 
-document.getElementById('betMinus').addEventListener('click', ()=>{
-  slotBet = Math.max(1, slotBet-5);
-  document.getElementById('slotBet').textContent = slotBet;
-});
-document.getElementById('betPlus').addEventListener('click', ()=>{
-  slotBet = Math.min(balance, slotBet+5);
-  document.getElementById('slotBet').textContent = slotBet;
-});
+bindBetInput('betMinus', 'betPlus', 'slotBet', ()=>slotBet, v=>slotBet=v);
 
 const spinBtn = document.getElementById('spinBtn');
 const slotMsg = document.getElementById('slotMsg');
@@ -2390,14 +2429,7 @@ numbersGrid.querySelectorAll('.num-btn').forEach(btn=>{
   });
 });
 
-document.getElementById('rBetMinus').addEventListener('click', ()=>{
-  rouletteBet = Math.max(1, rouletteBet-5);
-  document.getElementById('rouletteBet').textContent = rouletteBet;
-});
-document.getElementById('rBetPlus').addEventListener('click', ()=>{
-  rouletteBet = Math.min(balance, rouletteBet+5);
-  document.getElementById('rouletteBet').textContent = rouletteBet;
-});
+bindBetInput('rBetMinus', 'rBetPlus', 'rouletteBet', ()=>rouletteBet, v=>rouletteBet=v);
 
 // orden real de una ruleta europea (0-36)
 const wheelOrder = [0,32,15,19,4,21,2,25,17,34,6,27,13,36,11,30,8,23,10,5,24,16,33,1,20,14,31,9,22,18,29,7,28,12,35,3,26];
@@ -2507,14 +2539,7 @@ const bjDeal = document.getElementById('bjDeal');
 const bjHit = document.getElementById('bjHit');
 const bjStand = document.getElementById('bjStand');
 
-document.getElementById('bjBetMinus').addEventListener('click', ()=>{
-  bjBetAmount = Math.max(1, bjBetAmount-5);
-  document.getElementById('bjBet').textContent = bjBetAmount;
-});
-document.getElementById('bjBetPlus').addEventListener('click', ()=>{
-  bjBetAmount = Math.min(balance, bjBetAmount+5);
-  document.getElementById('bjBet').textContent = bjBetAmount;
-});
+bindBetInput('bjBetMinus', 'bjBetPlus', 'bjBet', ()=>bjBetAmount, v=>bjBetAmount=v);
 
 function freshDeck(){
   const d = [];
@@ -2709,14 +2734,7 @@ document.querySelectorAll('.dice-bet-options .bet-option').forEach(opt=>{
   });
 });
 
-document.getElementById('diceBetMinus').addEventListener('click', ()=>{
-  diceBetAmount = Math.max(1, diceBetAmount-5);
-  document.getElementById('diceBet').textContent = diceBetAmount;
-});
-document.getElementById('diceBetPlus').addEventListener('click', ()=>{
-  diceBetAmount = Math.min(balance, diceBetAmount+5);
-  document.getElementById('diceBet').textContent = diceBetAmount;
-});
+bindBetInput('diceBetMinus', 'diceBetPlus', 'diceBet', ()=>diceBetAmount, v=>diceBetAmount=v);
 
 rollDiceBtn.addEventListener('click', ()=>{
   if(!selectedDiceBet){
@@ -2793,14 +2811,7 @@ const aviatorMsg = document.getElementById('aviatorMsg');
 const aviatorBetBtn = document.getElementById('aviatorBetBtn');
 const aviatorCashoutBtn = document.getElementById('aviatorCashoutBtn');
 
-document.getElementById('avBetMinus').addEventListener('click', ()=>{
-  aviatorBetAmount = Math.max(1, aviatorBetAmount-5);
-  document.getElementById('aviatorBet').textContent = aviatorBetAmount;
-});
-document.getElementById('avBetPlus').addEventListener('click', ()=>{
-  aviatorBetAmount = Math.min(balance, aviatorBetAmount+5);
-  document.getElementById('aviatorBet').textContent = aviatorBetAmount;
-});
+bindBetInput('avBetMinus', 'avBetPlus', 'aviatorBet', ()=>aviatorBetAmount, v=>aviatorBetAmount=v);
 
 function generateCrashPoint(bet){
   const houseEdge = 0.04 + betDifficultyPenalty(bet || 0); // apuestas altas: la casa se protege más, el avión vuela menos
@@ -2982,12 +2993,20 @@ document.querySelectorAll('#minesConfig .bet-option').forEach(opt=>{
 document.getElementById('minesBetMinus').addEventListener('click', ()=>{
   if(minesActive) return;
   minesBetAmount = Math.max(1, minesBetAmount-5);
-  document.getElementById('minesBet').textContent = minesBetAmount;
+  document.getElementById('minesBet').value = minesBetAmount;
 });
 document.getElementById('minesBetPlus').addEventListener('click', ()=>{
   if(minesActive) return;
   minesBetAmount = Math.min(balance, minesBetAmount+5);
-  document.getElementById('minesBet').textContent = minesBetAmount;
+  document.getElementById('minesBet').value = minesBetAmount;
+});
+document.getElementById('minesBet').addEventListener('change', function(){
+  if(minesActive){ this.value = minesBetAmount; return; }
+  let v = parseInt(this.value, 10);
+  if(isNaN(v) || v < 1) v = 1;
+  if(v > balance && balance >= 1) v = balance;
+  minesBetAmount = v;
+  this.value = v;
 });
 
 function minesNextMultiplier(){
@@ -3106,12 +3125,20 @@ const pokerDrawBtn = document.getElementById('pokerDrawBtn');
 document.getElementById('pokerBetMinus').addEventListener('click', ()=>{
   if(pokerStage !== 'idle') return;
   pokerBetAmount = Math.max(1, pokerBetAmount-5);
-  document.getElementById('pokerBet').textContent = pokerBetAmount;
+  document.getElementById('pokerBet').value = pokerBetAmount;
 });
 document.getElementById('pokerBetPlus').addEventListener('click', ()=>{
   if(pokerStage !== 'idle') return;
   pokerBetAmount = Math.min(balance, pokerBetAmount+5);
-  document.getElementById('pokerBet').textContent = pokerBetAmount;
+  document.getElementById('pokerBet').value = pokerBetAmount;
+});
+document.getElementById('pokerBet').addEventListener('change', function(){
+  if(pokerStage !== 'idle'){ this.value = pokerBetAmount; return; }
+  let v = parseInt(this.value, 10);
+  if(isNaN(v) || v < 1) v = 1;
+  if(v > balance && balance >= 1) v = balance;
+  pokerBetAmount = v;
+  this.value = v;
 });
 
 function renderPokerHand(){
@@ -3240,14 +3267,7 @@ document.querySelectorAll('#baccBetOptions .bet-option').forEach(opt=>{
   });
 });
 
-document.getElementById('baccBetMinus').addEventListener('click', ()=>{
-  baccBetAmount = Math.max(1, baccBetAmount-5);
-  document.getElementById('baccBet').textContent = baccBetAmount;
-});
-document.getElementById('baccBetPlus').addEventListener('click', ()=>{
-  baccBetAmount = Math.min(balance, baccBetAmount+5);
-  document.getElementById('baccBet').textContent = baccBetAmount;
-});
+bindBetInput('baccBetMinus', 'baccBetPlus', 'baccBet', ()=>baccBetAmount, v=>baccBetAmount=v);
 
 function baccValue(card){
   if(['10','J','Q','K'].includes(card.rank)) return 0;
@@ -3387,12 +3407,20 @@ const plinkoSlotEls = Array.from(plinkoSlots.children);
 document.getElementById('plinkoBetMinus').addEventListener('click', ()=>{
   if(plinkoDropping) return;
   plinkoBetAmount = Math.max(1, plinkoBetAmount-5);
-  document.getElementById('plinkoBet').textContent = plinkoBetAmount;
+  document.getElementById('plinkoBet').value = plinkoBetAmount;
 });
 document.getElementById('plinkoBetPlus').addEventListener('click', ()=>{
   if(plinkoDropping) return;
   plinkoBetAmount = Math.min(balance, plinkoBetAmount+5);
-  document.getElementById('plinkoBet').textContent = plinkoBetAmount;
+  document.getElementById('plinkoBet').value = plinkoBetAmount;
+});
+document.getElementById('plinkoBet').addEventListener('change', function(){
+  if(plinkoDropping){ this.value = plinkoBetAmount; return; }
+  let v = parseInt(this.value, 10);
+  if(isNaN(v) || v < 1) v = 1;
+  if(v > balance && balance >= 1) v = balance;
+  plinkoBetAmount = v;
+  this.value = v;
 });
 
 plinkoDropBtn.addEventListener('click', ()=>{
@@ -3501,14 +3529,7 @@ function pickPremiumSymbol(){
   return premiumSymbols[0];
 }
 
-document.getElementById('premiumBetMinus').addEventListener('click', ()=>{
-  premiumBetAmount = Math.max(1, premiumBetAmount-5);
-  premiumBetLabel.textContent = premiumBetAmount;
-});
-document.getElementById('premiumBetPlus').addEventListener('click', ()=>{
-  premiumBetAmount = Math.min(balance, premiumBetAmount+5);
-  premiumBetLabel.textContent = premiumBetAmount;
-});
+bindBetInput('premiumBetMinus', 'premiumBetPlus', 'premiumBet', ()=>premiumBetAmount, v=>premiumBetAmount=v);
 
 premiumSpinBtn.addEventListener('click', ()=>{
   if(balance < premiumBetAmount){
