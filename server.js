@@ -46,6 +46,17 @@ function createSession(email){
   return token;
 }
 
+// Busca quién es el dueño real de un pase de sesión, consultando la base de
+// datos — nunca hay que confiar en un correo que mande el propio navegador,
+// porque cualquiera podría escribir el que quiera desde fuera de la app.
+async function getAuthenticatedUser(token){
+  if(!token) return null;
+  const email = sessions[token];
+  if(!email) return null;
+  const result = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
+  return result.rows.length ? result.rows[0] : null;
+}
+
 async function initDB(){
   await pool.query(`
     CREATE TABLE IF NOT EXISTS users (
@@ -185,13 +196,17 @@ app.post('/api/logout', (req, res) => {
 });
 
 // ---- GUARDAR SALDO ----
+// Usa el pase de sesión para saber de quién es el saldo que hay que guardar
+// — nunca hay que confiar en un correo que mande el navegador directamente.
 app.post('/api/balance', async (req, res) => {
   try{
-    const email = (req.body.email || '').trim().toLowerCase();
+    const user = await getAuthenticatedUser(req.body.token);
+    if(!user) return res.status(401).json({ error: 'Sesión inválida' });
+
     const balance = parseInt(req.body.balance, 10);
     if(isNaN(balance)) return res.status(400).json({ error: 'Saldo inválido' });
 
-    await pool.query('UPDATE users SET balance = $1 WHERE email = $2', [balance, email]);
+    await pool.query('UPDATE users SET balance = $1 WHERE email = $2', [balance, user.email]);
     res.json({ ok: true });
   }catch(err){
     console.error(err);
@@ -199,9 +214,14 @@ app.post('/api/balance', async (req, res) => {
   }
 });
 
-// ---- PANEL DE ADMINISTRACIÓN: listar usuarios ----
+// ---- PANEL DE ADMINISTRACIÓN: listar usuarios (solo admin o súper admin) ----
 app.get('/api/users', async (req, res) => {
   try{
+    const user = await getAuthenticatedUser(req.query.token);
+    if(!user || !['admin', 'superadmin'].includes(user.role)){
+      return res.status(403).json({ error: 'No autorizado' });
+    }
+
     const result = await pool.query('SELECT name, email, balance, role FROM users ORDER BY name ASC');
     res.json({ ok: true, users: result.rows });
   }catch(err){
@@ -213,16 +233,14 @@ app.get('/api/users', async (req, res) => {
 // ---- PANEL DE ADMINISTRACIÓN: cambiar rol (solo el súper admin puede) ----
 app.post('/api/role', async (req, res) => {
   try{
-    const requesterEmail = (req.body.requesterEmail || '').trim().toLowerCase();
-    const targetEmail = (req.body.targetEmail || '').trim().toLowerCase();
-    const role = req.body.role;
-
-    if(!['user', 'admin'].includes(role)) return res.status(400).json({ error: 'Rol inválido' });
-
-    const requester = await pool.query('SELECT role FROM users WHERE email = $1', [requesterEmail]);
-    if(requester.rows.length === 0 || requester.rows[0].role !== 'superadmin'){
+    const requester = await getAuthenticatedUser(req.body.token);
+    if(!requester || requester.role !== 'superadmin'){
       return res.status(403).json({ error: 'Solo el súper admin puede cambiar roles' });
     }
+
+    const targetEmail = (req.body.targetEmail || '').trim().toLowerCase();
+    const role = req.body.role;
+    if(!['user', 'admin'].includes(role)) return res.status(400).json({ error: 'Rol inválido' });
     if(targetEmail === SUPERADMIN_EMAIL){
       return res.status(400).json({ error: 'No se puede cambiar el rol del súper admin' });
     }
@@ -242,16 +260,14 @@ app.post('/api/role', async (req, res) => {
 // controlar cuánto cargó y pagó cada administrador, y a quién.
 app.post('/api/admin/adjust-balance', async (req, res) => {
   try{
-    const requesterEmail = (req.body.requesterEmail || '').trim().toLowerCase();
-    const targetEmail = (req.body.targetEmail || '').trim().toLowerCase();
-    const amount = parseInt(req.body.amount, 10);
-
-    if(isNaN(amount) || amount === 0) return res.status(400).json({ error: 'Ingresá un monto válido' });
-
-    const requester = await pool.query('SELECT name, role FROM users WHERE email = $1', [requesterEmail]);
-    if(requester.rows.length === 0 || !['admin', 'superadmin'].includes(requester.rows[0].role)){
+    const requester = await getAuthenticatedUser(req.body.token);
+    if(!requester || !['admin', 'superadmin'].includes(requester.role)){
       return res.status(403).json({ error: 'No autorizado' });
     }
+
+    const targetEmail = (req.body.targetEmail || '').trim().toLowerCase();
+    const amount = parseInt(req.body.amount, 10);
+    if(isNaN(amount) || amount === 0) return res.status(400).json({ error: 'Ingresá un monto válido' });
 
     const targetBefore = await pool.query('SELECT name FROM users WHERE email = $1', [targetEmail]);
     if(targetBefore.rows.length === 0) return res.status(400).json({ error: 'Cuenta no encontrada' });
@@ -263,10 +279,40 @@ app.post('/api/admin/adjust-balance', async (req, res) => {
 
     await pool.query(
       'INSERT INTO balance_adjustments (admin_email, admin_name, target_email, target_name, amount) VALUES ($1,$2,$3,$4,$5)',
-      [requesterEmail, requester.rows[0].name, targetEmail, targetBefore.rows[0].name, amount]
+      [requester.email, requester.name, targetEmail, targetBefore.rows[0].name, amount]
     );
 
     res.json({ ok: true, newBalance: result.rows[0].balance });
+  }catch(err){
+    console.error(err);
+    res.status(500).json({ error: 'Error del servidor' });
+  }
+});
+
+// ---- ELIMINAR JUGADOR (admin o súper admin; para borrar un admin hace falta ser súper admin) ----
+// Se usa cuando un jugador avisa que no va a jugar más. El historial de
+// cargas/pagos que ya tenía ese jugador queda guardado igual, para no
+// perder el registro contable.
+app.post('/api/admin/delete-user', async (req, res) => {
+  try{
+    const requester = await getAuthenticatedUser(req.body.token);
+    if(!requester || !['admin', 'superadmin'].includes(requester.role)){
+      return res.status(403).json({ error: 'No autorizado' });
+    }
+
+    const targetEmail = (req.body.targetEmail || '').trim().toLowerCase();
+    if(targetEmail === SUPERADMIN_EMAIL){
+      return res.status(400).json({ error: 'No se puede eliminar la cuenta de súper admin' });
+    }
+
+    const target = await pool.query('SELECT role FROM users WHERE email = $1', [targetEmail]);
+    if(target.rows.length === 0) return res.status(400).json({ error: 'Cuenta no encontrada' });
+    if(target.rows[0].role !== 'user' && requester.role !== 'superadmin'){
+      return res.status(403).json({ error: 'Solo el súper admin puede eliminar una cuenta de administrador' });
+    }
+
+    await pool.query('DELETE FROM users WHERE email = $1', [targetEmail]);
+    res.json({ ok: true });
   }catch(err){
     console.error(err);
     res.status(500).json({ error: 'Error del servidor' });
@@ -278,9 +324,8 @@ app.post('/api/admin/adjust-balance', async (req, res) => {
 // así el súper admin puede hacer arreglo de cuentas con cada uno.
 app.get('/api/admin/ledger', async (req, res) => {
   try{
-    const requesterEmail = (req.query.requesterEmail || '').trim().toLowerCase();
-    const requester = await pool.query('SELECT role FROM users WHERE email = $1', [requesterEmail]);
-    if(requester.rows.length === 0 || requester.rows[0].role !== 'superadmin'){
+    const requester = await getAuthenticatedUser(req.query.token);
+    if(!requester || requester.role !== 'superadmin'){
       return res.status(403).json({ error: 'Solo el súper admin puede ver el historial' });
     }
 

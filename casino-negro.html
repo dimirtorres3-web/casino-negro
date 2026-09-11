@@ -2236,7 +2236,7 @@ tryRestoreSession();
 function saveBalance(){
   if(!currentUser) return;
   if(hasBackend){
-    apiCall('/api/balance', { email: currentUser.email, balance: balance }).catch(function(){});
+    apiCall('/api/balance', { token: getSessionToken(), balance: balance }).catch(function(){});
   } else if(localDB.users[currentUser.email]){
     localDB.users[currentUser.email].balance = balance;
   }
@@ -2277,7 +2277,7 @@ async function renderAdminPanel(){
   let users;
   try{
     if(hasBackend){
-      const res = await fetch('/api/users');
+      const res = await fetch('/api/users?token=' + encodeURIComponent(getSessionToken() || ''));
       const data = await res.json();
       users = data.users;
     } else {
@@ -2316,7 +2316,7 @@ async function renderAdminPanel(){
         btn.disabled = true;
         try{
           if(hasBackend){
-            await apiCall('/api/role', { requesterEmail: currentUser.email, targetEmail: u.email, role: newRole });
+            await apiCall('/api/role', { token: getSessionToken(), targetEmail: u.email, role: newRole });
           } else if(localDB.users[u.email]){
             localDB.users[u.email].role = newRole;
           }
@@ -2355,7 +2355,7 @@ async function renderAdminPanel(){
 
     function apiOrLocalAdjust(amount){
       if(hasBackend){
-        return apiCall('/api/admin/adjust-balance', { requesterEmail: currentUser.email, targetEmail: u.email, amount: amount });
+        return apiCall('/api/admin/adjust-balance', { token: getSessionToken(), targetEmail: u.email, amount: amount });
       } else {
         if(localDB.users[u.email]){
           localDB.users[u.email].balance = Math.max(0, localDB.users[u.email].balance + amount);
@@ -2382,6 +2382,31 @@ async function renderAdminPanel(){
     adjustWrap.appendChild(addBtn);
     adjustWrap.appendChild(removeBtn);
     row.appendChild(adjustWrap);
+
+    // eliminar cuenta — cualquier admin puede borrar jugadores; solo el
+    // súper admin puede borrar cuentas de otros administradores
+    if(u.email !== SUPERADMIN_EMAIL && (u.role === 'user' || currentUser.role === 'superadmin')){
+      const delBtn = document.createElement('button');
+      delBtn.className = 'admin-role-btn';
+      delBtn.style.cssText = 'width:100%; margin-top:6px; color:#e5a7a7; border-color:var(--red);';
+      delBtn.textContent = '🗑 Eliminar cuenta';
+      delBtn.addEventListener('click', function(){
+        if(!confirm('¿Seguro que querés eliminar la cuenta de ' + u.name + ' (' + u.email + ')? Esta acción no se puede deshacer.')) return;
+        delBtn.disabled = true;
+        delBtn.textContent = 'Eliminando...';
+        const donePromise = hasBackend
+          ? apiCall('/api/admin/delete-user', { token: getSessionToken(), targetEmail: u.email })
+          : (delete localDB.users[u.email], Promise.resolve());
+        donePromise.then(function(){
+          renderAdminPanel();
+        }).catch(function(err){
+          delBtn.disabled = false;
+          delBtn.textContent = '🗑 Eliminar cuenta';
+          alert(err.message || 'No se pudo eliminar la cuenta');
+        });
+      });
+      row.appendChild(delBtn);
+    }
 
     list.appendChild(row);
   });
@@ -2418,7 +2443,7 @@ async function renderLedger(){
 
   let movements = [];
   try{
-    const res = await fetch('/api/admin/ledger?requesterEmail=' + encodeURIComponent(currentUser.email));
+    const res = await fetch('/api/admin/ledger?token=' + encodeURIComponent(getSessionToken() || ''));
     const data = await res.json();
     if(!res.ok) throw new Error(data.error || 'Error');
     movements = data.movements;
