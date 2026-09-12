@@ -1078,6 +1078,370 @@
     text-align:center;
     line-height: 1.8;
   }
+
+  /* ---- BINGO (90 bolillas) ---- */
+  .bingo-panel{
+    background: var(--panel);
+    border: 1px solid var(--gold-dim);
+    border-radius: 14px;
+    padding: 16px;
+  }
+  .bingo-board{
+    background: #05000c;
+    border: 2px solid var(--gold);
+    border-radius: 10px;
+    padding: 8px;
+    margin-bottom: 12px;
+    box-shadow: inset 0 0 20px rgba(0,0,0,0.8);
+  }
+  .bingo-board-grid{
+    display:grid;
+    grid-template-columns: repeat(10, 1fr);
+    gap: 3px;
+  }
+  .bingo-ball{
+    aspect-ratio: 1;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size: 9px;
+    color: var(--text-dim);
+    background: var(--panel2);
+    border-radius: 50%;
+    border: 1px solid #2a2a2a;
+  }
+  .bingo-ball.called{
+    background: radial-gradient(circle at 35% 30%, #fff6d6, var(--gold) 60%, var(--gold-dim));
+    color: #2b1208;
+    font-weight:bold;
+    border-color: var(--gold);
+    box-shadow: 0 0 8px rgba(217,119,87,0.6);
+  }
+  .bingo-ball.current{
+    animation: bingoPulse .5s ease-in-out infinite alternate;
+  }
+  @keyframes bingoPulse{
+    from{ transform: scale(1); }
+    to{ transform: scale(1.25); box-shadow: 0 0 16px rgba(255,255,255,0.9); }
+  }
+  .bingo-current-label{
+    text-align:center;
+    color: var(--gold);
+    font-size: 13px;
+    margin-bottom: 12px;
+    min-height: 18px;
+  }
+  .bingo-card{
+    background: linear-gradient(160deg, #fff8e8, #f0dca8);
+    border: 3px solid var(--gold);
+    border-radius: 10px;
+    padding: 8px;
+    margin-bottom: 12px;
+  }
+  .bingo-card-grid{
+    display:grid;
+    grid-template-columns: repeat(9, 1fr);
+    gap: 3px;
+  }
+  .bingo-cell{
+    aspect-ratio: 1;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size: 12px;
+    font-weight:bold;
+    color: #3a2a10;
+    background: rgba(255,255,255,0.5);
+    border-radius: 4px;
+  }
+  .bingo-cell.empty{ background: transparent; }
+  .bingo-cell.marked{
+    background: var(--green);
+    color: #fff;
+  }
+  .bingo-msg{
+    text-align:center;
+    min-height: 22px;
+    color: var(--gold);
+    font-size: 15px;
+    margin-bottom: 13px;
+  }
+  .bingo-paytable{
+    margin-top: 12px;
+    font-size: 11px;
+    color: var(--text-dim);
+    text-align:center;
+    line-height: 1.8;
+  }
+
+  /* ---- KENO ---- */
+  .keno-panel{
+    background: var(--panel);
+    border: 1px solid var(--gold-dim);
+    border-radius: 14px;
+    padding: 16px;
+  }
+  .keno-config{
+    display:grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    margin-bottom: 13px;
+  }
+  .keno-grid{
+    display:grid;
+    grid-template-columns: repeat(8, 1fr);
+    gap: 4px;
+    background: #05000c;
+    border: 1px solid var(--gold-dim);
+    border-radius: 10px;
+    padding: 8px;
+    margin-bottom: 13px;
+  }
+  .keno-cell{
+    aspect-ratio: 1;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size: 11px;
+    background: var(--panel2);
+    border: 1px solid #2a2a2a;
+    border-radius: 6px;
+    color: var(--text);
+    cursor:pointer;
+  }
+  .keno-cell.picked{
+    background: linear-gradient(160deg, #2a2010, #17130a);
+    border-color: var(--gold);
+    color: var(--gold);
+    font-weight:bold;
+  }
+  .keno-cell.hit{
+    background: var(--green);
+    color: #fff;
+    border-color: #2ea86a;
+  }
+  .keno-cell.missed-drawn{
+    border-color: var(--red);
+    color: #e5a7a7;
+  }
+  .keno-msg{
+    text-align:center;
+    min-height: 22px;
+    color: var(--gold);
+    font-size: 15px;
+    margin-bottom: 13px;
+  }
+  .keno-paytable{
+    margin-top: 12px;
+    font-size: 10px;
+    color: var(--text-dim);
+    text-align:center;
+    line-height: 1.7;
+  }
+
+  /* ---- RASCA Y GANA ---- */
+  .scratch-panel{
+    background: var(--panel);
+    border: 1px solid var(--gold-dim);
+    border-radius: 14px;
+    padding: 16px;
+  }
+  .scratch-card{
+    background: linear-gradient(160deg, #fff3c4, #e8b930 30%, #6b4308 70%, #e8b930);
+    border-radius: 14px;
+    padding: 8px;
+    margin-bottom: 13px;
+  }
+  .scratch-grid{
+    display:grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 5px;
+    background: #05000c;
+    border-radius: 10px;
+    padding: 6px;
+  }
+  .scratch-cell{
+    aspect-ratio: 1;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size: 26px;
+    background: linear-gradient(160deg, #ffffff, #d8d8de 60%, #b8b8c2);
+    border-radius: 8px;
+    box-shadow: inset 0 2px 3px rgba(255,255,255,0.9), inset 0 -3px 5px rgba(0,0,0,0.25);
+  }
+  .scratch-cell.win-line{
+    box-shadow: inset 0 0 0 3px var(--gold), 0 0 12px rgba(217,119,87,0.8);
+  }
+  .scratch-msg{
+    text-align:center;
+    min-height: 22px;
+    color: var(--gold);
+    font-size: 15px;
+    margin-bottom: 13px;
+  }
+  .scratch-paytable{
+    margin-top: 12px;
+    font-size: 11px;
+    color: var(--text-dim);
+    text-align:center;
+    line-height: 1.8;
+  }
+
+  /* ---- MAYOR O MENOR ---- */
+  .hilo-panel{
+    background: var(--panel);
+    border: 1px solid var(--gold-dim);
+    border-radius: 14px;
+    padding: 16px;
+  }
+  .hilo-cards{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap: 18px;
+    background: #05000c;
+    border: 1px solid var(--gold-dim);
+    border-radius: 10px;
+    padding: 20px 10px;
+    margin-bottom: 13px;
+  }
+  .hilo-vs{
+    color: var(--text-dim);
+    font-size: 20px;
+  }
+  .hilo-msg{
+    text-align:center;
+    min-height: 22px;
+    color: var(--gold);
+    font-size: 15px;
+    margin-bottom: 13px;
+  }
+  .hilo-mult-row{
+    display:flex;
+    justify-content:center;
+    gap: 10px;
+    margin-bottom: 13px;
+    font-size: 11px;
+    color: var(--text-dim);
+  }
+  .hilo-actions{
+    display:grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  .hilo-actions button{
+    padding: 16px 4px;
+    border-radius: 10px;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight:bold;
+    cursor:pointer;
+    border: none;
+  }
+  #hiloHigherBtn{ background: var(--green); color:#fff; }
+  #hiloLowerBtn{ background: var(--red); color:#fff; }
+  .hilo-actions button:disabled{ opacity:0.4; cursor:not-allowed; }
+
+  /* ---- SIC BO ---- */
+  .sicbo-panel{
+    background: var(--panel);
+    border: 1px solid var(--gold-dim);
+    border-radius: 14px;
+    padding: 16px;
+  }
+  .sicbo-dice-area{
+    display:flex;
+    justify-content:center;
+    gap: 14px;
+    background: radial-gradient(ellipse at center, #0f2818, #071810 75%);
+    border: 3px solid var(--gold);
+    border-radius: 12px;
+    padding: 22px 10px;
+    margin-bottom: 13px;
+  }
+  .sicbo-die{
+    width: 54px; height:54px;
+    background: linear-gradient(160deg, #ffffff, #e2ddd0);
+    border-radius: 10px;
+    display:grid;
+    grid-template-columns: repeat(3,1fr);
+    grid-template-rows: repeat(3,1fr);
+    padding: 8px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+  }
+  .sicbo-die.rolling{ animation: shake .1s linear infinite; }
+  .sicbo-die .dot{
+    width:8px; height:8px;
+    border-radius:50%;
+    background:#1a1a1a;
+    align-self:center; justify-self:center;
+    visibility:hidden;
+  }
+  .sicbo-msg{
+    text-align:center;
+    min-height: 22px;
+    color: var(--gold);
+    font-size: 15px;
+    margin-bottom: 13px;
+  }
+  .sicbo-bet-options{
+    display:grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+    margin-bottom: 13px;
+  }
+  .sicbo-numbers{
+    display:grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 6px;
+    margin-bottom: 13px;
+  }
+
+  /* ---- RUEDA DE LA SUERTE ---- */
+  .wheel-panel{
+    background: var(--panel);
+    border: 1px solid var(--gold-dim);
+    border-radius: 14px;
+    padding: 16px;
+  }
+  .fortune-wheel-wrap{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    margin-bottom: 13px;
+  }
+  .fortune-wheel-outer{
+    width: 240px; height: 240px;
+    position: relative;
+    margin-bottom: 10px;
+  }
+  .fortune-wheel{
+    width:100%; height:100%;
+    border-radius:50%;
+    border: 5px solid var(--gold);
+    position:relative;
+    transition: transform 3.5s cubic-bezier(.12,.7,.15,1);
+    box-shadow: 0 0 0 3px #1a1108, 0 8px 20px rgba(0,0,0,0.5);
+  }
+  .fortune-pointer{
+    position:absolute;
+    top:-8px; left:50%;
+    transform: translateX(-50%);
+    width:0;height:0;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-top: 18px solid var(--gold);
+    z-index: 4;
+  }
+  .wheel-msg{
+    text-align:center;
+    min-height: 22px;
+    color: var(--gold);
+    font-size: 15px;
+    margin-bottom: 13px;
+  }
+
   /* ---- SCREENS / AUTH / LOBBY / TOPBAR ---- */
   .screen{ display:none; }
   .screen.active{ display:block; }
@@ -1553,6 +1917,12 @@
       <div class="lobby-card" data-game="baccarat"><div class="icon-badge"><span class="icon">🀄</span></div><div class="name">BACCARAT</div><div class="desc">Jugador vs banca</div></div>
       <div class="lobby-card" data-game="plinko"><div class="icon-badge"><span class="icon">🔵</span></div><div class="name">PLINKO</div><div class="desc">Soltá la bolita</div></div>
       <div class="lobby-card" data-game="premium"><div class="icon-badge"><span class="icon">🎪</span></div><div class="name">PREMIUM SLOT</div><div class="desc">5 rodillos, gran premio</div></div>
+      <div class="lobby-card" data-game="bingo"><div class="icon-badge"><span class="icon">🎱</span></div><div class="name">BINGO</div><div class="desc">90 bolillas, línea o cartón lleno</div></div>
+      <div class="lobby-card" data-game="keno"><div class="icon-badge"><span class="icon">🔢</span></div><div class="name">KENO</div><div class="desc">Elegí números y ganá</div></div>
+      <div class="lobby-card" data-game="scratch"><div class="icon-badge"><span class="icon">🎫</span></div><div class="name">RASCA Y GANA</div><div class="desc">Raspá y descubrí al instante</div></div>
+      <div class="lobby-card" data-game="hilo"><div class="icon-badge"><span class="icon">🃏</span></div><div class="name">MAYOR O MENOR</div><div class="desc">¿La próxima es más alta?</div></div>
+      <div class="lobby-card" data-game="sicbo"><div class="icon-badge"><span class="icon">🎲</span></div><div class="name">SIC BO</div><div class="desc">3 dados, varias apuestas</div></div>
+      <div class="lobby-card" data-game="fortunewheel"><div class="icon-badge"><span class="icon">🎡</span></div><div class="name">RUEDA DE LA SUERTE</div><div class="desc">Girá y multiplicá tu apuesta</div></div>
     </div>
 
     <button class="admin-btn hidden" id="adminPanelBtn">⚙ PANEL DE ADMINISTRACIÓN</button>
@@ -1610,7 +1980,7 @@
       <div class="slot-msg" id="slotMsg">Elegí tu apuesta y girá</div>
       <div class="bet-row">
         <button id="betMinus">−</button>
-        <div class="bet-amount"><input type="number" id="slotBet" class="bet-input" value="10" min="1"> fichas</div>
+        <div class="bet-amount"><input type="number" id="slotBet" class="bet-input" value="1" min="1"> fichas</div>
         <button id="betPlus">+</button>
       </div>
       <button class="spin-btn" id="spinBtn">GIRAR</button>
@@ -1645,7 +2015,7 @@
       <div style="text-align:center; font-size:11px; color:var(--text-dim); margin-bottom:10px;">La ficha se aplica a cada casilla marcada por separado</div>
       <div class="bet-row">
         <button id="rBetMinus">−</button>
-        <div class="bet-amount"><input type="number" id="rouletteBet" class="bet-input" value="10" min="1"> fichas c/u</div>
+        <div class="bet-amount"><input type="number" id="rouletteBet" class="bet-input" value="1" min="1"> fichas c/u</div>
         <button id="rBetPlus">+</button>
       </div>
       <button class="spin-btn" id="spinRouletteBtn">JUGAR</button>
@@ -1669,7 +2039,7 @@
       <div class="bj-msg" id="bjMsg">Elegí tu apuesta y repartí</div>
       <div class="bet-row">
         <button id="bjBetMinus">−</button>
-        <div class="bet-amount"><input type="number" id="bjBet" class="bet-input" value="10" min="1"> fichas</div>
+        <div class="bet-amount"><input type="number" id="bjBet" class="bet-input" value="1" min="1"> fichas</div>
         <button id="bjBetPlus">+</button>
       </div>
       <div class="bj-actions">
@@ -1697,7 +2067,7 @@
       </div>
       <div class="bet-row">
         <button id="diceBetMinus">−</button>
-        <div class="bet-amount"><input type="number" id="diceBet" class="bet-input" value="10" min="1"> fichas</div>
+        <div class="bet-amount"><input type="number" id="diceBet" class="bet-input" value="1" min="1"> fichas</div>
         <button id="diceBetPlus">+</button>
       </div>
       <button class="spin-btn" id="rollDiceBtn">TIRAR</button>
@@ -1718,7 +2088,7 @@
       <div class="aviator-msg" id="aviatorMsg">Esperando la próxima ronda...</div>
       <div class="bet-row">
         <button id="avBetMinus">−</button>
-        <div class="bet-amount"><input type="number" id="aviatorBet" class="bet-input" value="10" min="1"> fichas</div>
+        <div class="bet-amount"><input type="number" id="aviatorBet" class="bet-input" value="1" min="1"> fichas</div>
         <button id="avBetPlus">+</button>
       </div>
       <div class="aviator-actions">
@@ -1739,7 +2109,7 @@
       <div class="mines-msg" id="minesMsg">Elegí minas y apuesta, después jugá</div>
       <div class="bet-row">
         <button id="minesBetMinus">−</button>
-        <div class="bet-amount"><input type="number" id="minesBet" class="bet-input" value="10" min="1"> fichas</div>
+        <div class="bet-amount"><input type="number" id="minesBet" class="bet-input" value="1" min="1"> fichas</div>
         <button id="minesBetPlus">+</button>
       </div>
       <div class="mines-actions">
@@ -1755,7 +2125,7 @@
       <div class="poker-msg" id="pokerMsg">Repartí para empezar</div>
       <div class="bet-row">
         <button id="pokerBetMinus">−</button>
-        <div class="bet-amount"><input type="number" id="pokerBet" class="bet-input" value="10" min="1"> fichas</div>
+        <div class="bet-amount"><input type="number" id="pokerBet" class="bet-input" value="1" min="1"> fichas</div>
         <button id="pokerBetPlus">+</button>
       </div>
       <div class="poker-actions">
@@ -1785,7 +2155,7 @@
       </div>
       <div class="bet-row">
         <button id="baccBetMinus">−</button>
-        <div class="bet-amount"><input type="number" id="baccBet" class="bet-input" value="10" min="1"> fichas</div>
+        <div class="bet-amount"><input type="number" id="baccBet" class="bet-input" value="1" min="1"> fichas</div>
         <button id="baccBetPlus">+</button>
       </div>
       <button class="spin-btn" id="baccDealBtn">REPARTIR</button>
@@ -1802,7 +2172,7 @@
       <div class="plinko-msg" id="plinkoMsg">Soltá la bolita</div>
       <div class="bet-row">
         <button id="plinkoBetMinus">−</button>
-        <div class="bet-amount"><input type="number" id="plinkoBet" class="bet-input" value="10" min="1"> fichas</div>
+        <div class="bet-amount"><input type="number" id="plinkoBet" class="bet-input" value="1" min="1"> fichas</div>
         <button id="plinkoBetPlus">+</button>
       </div>
       <button class="spin-btn" id="plinkoDropBtn">SOLTAR</button>
@@ -1840,7 +2210,7 @@
           <button id="premiumBetMinus">−</button>
           <div class="premium-stat">
             <span class="label">Apuesta</span>
-            <input type="number" class="value bet-input" id="premiumBet" value="10" min="1">
+            <input type="number" class="value bet-input" id="premiumBet" value="1" min="1">
           </div>
           <button id="premiumBetPlus">+</button>
         </div>
@@ -1851,6 +2221,134 @@
         🔔🔔🔔🔔🔔 x240 &nbsp;·&nbsp; 🍇🍇🍇🍇🍇 x120 &nbsp;·&nbsp; 🍋🍋🍋🍋🍋 x80 &nbsp;·&nbsp; 🍒🍒🍒🍒🍒 x50<br>
         Pagan 3, 4 o 5 símbolos iguales seguidos desde el rodillo 1
       </div>
+    </div>
+  </section>
+
+  <section id="bingo">
+    <div class="bingo-panel">
+      <div class="bingo-board">
+        <div class="bingo-board-grid" id="bingoBoardGrid"></div>
+      </div>
+      <div class="bingo-current-label" id="bingoCurrentLabel">Comprá tu cartón y jugá</div>
+      <div class="bingo-card" id="bingoCard">
+        <div class="bingo-card-grid" id="bingoCardGrid"></div>
+      </div>
+      <div class="bingo-msg" id="bingoMsg">Elegí tu apuesta y comprá el cartón</div>
+      <div class="bet-row">
+        <button id="bingoBetMinus">−</button>
+        <div class="bet-amount"><input type="number" id="bingoBet" class="bet-input" value="1" min="1"> fichas</div>
+        <button id="bingoBetPlus">+</button>
+      </div>
+      <button class="spin-btn" id="bingoPlayBtn">COMPRAR CARTÓN Y JUGAR</button>
+      <div class="bingo-paytable">
+        Se cantan 60 de las 90 bolillas.<br>
+        <b>Línea</b> (una fila completa) = x2 &nbsp;·&nbsp; <b>¡BINGO!</b> (cartón lleno) = x245
+      </div>
+    </div>
+  </section>
+
+  <section id="keno">
+    <div class="keno-panel">
+      <div class="keno-config">
+        <div class="bet-option selected" data-picks="4">4 números</div>
+        <div class="bet-option" data-picks="8">8 números</div>
+        <div class="bet-option" data-picks="10">10 números</div>
+      </div>
+      <div class="keno-grid" id="kenoGrid"></div>
+      <div class="keno-msg" id="kenoMsg">Elegí tus números (según la cantidad de arriba)</div>
+      <div class="bet-row">
+        <button id="kenoBetMinus">−</button>
+        <div class="bet-amount"><input type="number" id="kenoBet" class="bet-input" value="1" min="1"> fichas</div>
+        <button id="kenoBetPlus">+</button>
+      </div>
+      <button class="spin-btn" id="kenoPlayBtn">JUGAR</button>
+      <div class="keno-paytable" id="kenoPaytable"></div>
+    </div>
+  </section>
+
+  <section id="scratch">
+    <div class="scratch-panel">
+      <div class="scratch-card">
+        <div class="scratch-grid" id="scratchGrid"></div>
+      </div>
+      <div class="scratch-msg" id="scratchMsg">Comprá tu cartón y raspá</div>
+      <div class="bet-row">
+        <button id="scratchBetMinus">−</button>
+        <div class="bet-amount"><input type="number" id="scratchBet" class="bet-input" value="1" min="1"> fichas</div>
+        <button id="scratchBetPlus">+</button>
+      </div>
+      <button class="spin-btn" id="scratchPlayBtn">COMPRAR Y RASPAR</button>
+      <div class="scratch-paytable">
+        Ganás con 3 símbolos iguales en línea (fila, columna o diagonal)<br>
+        🍒x1 · 🍋x2 · 🍀x4 · 💎x9 · ⭐x30 · 7️⃣x150
+      </div>
+    </div>
+  </section>
+
+  <section id="hilo">
+    <div class="hilo-panel">
+      <div class="hilo-cards">
+        <div class="card" id="hiloCurrentCard" style="width:70px; height:100px; font-size:26px;">A</div>
+        <div class="hilo-vs">→</div>
+        <div class="card back" id="hiloNextCard" style="width:70px; height:100px;"></div>
+      </div>
+      <div class="hilo-msg" id="hiloMsg">Elegí tu apuesta y arrancá</div>
+      <div class="hilo-mult-row" id="hiloMultRow"></div>
+      <div class="bet-row">
+        <button id="hiloBetMinus">−</button>
+        <div class="bet-amount"><input type="number" id="hiloBet" class="bet-input" value="1" min="1"> fichas</div>
+        <button id="hiloBetPlus">+</button>
+      </div>
+      <button class="spin-btn" id="hiloStartBtn">REPARTIR</button>
+      <div class="hilo-actions" id="hiloActions" style="display:none; margin-top:10px;">
+        <button id="hiloHigherBtn">▲ MÁS ALTA</button>
+        <button id="hiloLowerBtn">▼ MÁS BAJA</button>
+      </div>
+    </div>
+  </section>
+
+  <section id="sicbo">
+    <div class="sicbo-panel">
+      <div class="sicbo-dice-area">
+        <div class="sicbo-die" id="sicboDie1"></div>
+        <div class="sicbo-die" id="sicboDie2"></div>
+        <div class="sicbo-die" id="sicboDie3"></div>
+      </div>
+      <div class="sicbo-msg" id="sicboMsg">Elegí una o más apuestas</div>
+      <div class="sicbo-bet-options" id="sicboBetOptions">
+        <div class="bet-option" data-sicbo="grande">Grande (11-17)<span class="payout">x2</span></div>
+        <div class="bet-option" data-sicbo="chica">Chica (4-10)<span class="payout">x2</span></div>
+      </div>
+      <div style="text-align:center; font-size:11px; color:var(--text-dim); margin-bottom:8px;">O elegí un número (paga según cuántos dados lo muestren):</div>
+      <div class="sicbo-numbers" id="sicboNumbers"></div>
+      <div class="bet-row">
+        <button id="sicboBetMinus">−</button>
+        <div class="bet-amount"><input type="number" id="sicboBet" class="bet-input" value="1" min="1"> fichas c/u</div>
+        <button id="sicboBetPlus">+</button>
+      </div>
+      <button class="spin-btn" id="sicboRollBtn">TIRAR LOS DADOS</button>
+    </div>
+  </section>
+
+  <section id="fortunewheel">
+    <div class="wheel-panel">
+      <div class="fortune-wheel-wrap">
+        <div class="fortune-wheel-outer">
+          <div class="fortune-pointer"></div>
+          <div class="fortune-wheel" id="fortuneWheel">
+            <svg viewBox="0 0 240 240" xmlns="http://www.w3.org/2000/svg" style="width:100%; height:100%;">
+              <g id="fortuneWedges"></g>
+            </svg>
+          </div>
+        </div>
+      </div>
+      <div class="wheel-msg" id="wheelMsg">Apostá y girá la rueda</div>
+      <div class="bet-row">
+        <button id="wheelBetMinus">−</button>
+        <div class="bet-amount"><input type="number" id="wheelBet" class="bet-input" value="1" min="1"> fichas</div>
+        <button id="wheelBetPlus">+</button>
+      </div>
+      <button class="spin-btn" id="wheelSpinBtn">GIRAR</button>
     </div>
   </section>
 
@@ -1993,8 +2491,8 @@ function bindBetInput(minusId, plusId, inputId, getBet, setBet){
 }
 
 let balance = 1000;
-let slotBet = 10;
-let rouletteBet = 10;
+let slotBet = 1;
+let rouletteBet = 1;
 let selectedBets = [];
 
 const balanceEls = document.querySelectorAll('.balance-value');
@@ -2520,7 +3018,8 @@ document.getElementById('ledgerBackBtn').addEventListener('click', function(){
 const gameTitles = {
   slots: 'Tragamonedas', roulette: 'Ruleta', blackjack: 'Blackjack', dice: 'Dados',
   aviator: 'Aviator', mines: 'Minas', poker: 'Video Poker', baccarat: 'Baccarat', plinko: 'Plinko',
-  premium: 'Tragamonedas Premium'
+  premium: 'Tragamonedas Premium', bingo: 'Bingo',
+  keno: 'Keno', scratch: 'Rasca y Gana', hilo: 'Mayor o Menor', sicbo: 'Sic Bo', fortunewheel: 'Rueda de la Suerte'
 };
 
 let aviatorStarted = false;
@@ -2788,7 +3287,7 @@ spinRouletteBtn.addEventListener('click', ()=>{
 // ---- BLACKJACK ----
 const suits = [{s:'♠',c:'black-suit'},{s:'♥',c:'red-suit'},{s:'♦',c:'red-suit'},{s:'♣',c:'black-suit'}];
 const ranks = ['A','2','3','4','5','6','7','8','9','10','J','Q','K'];
-let bjBetAmount = 10;
+let bjBetAmount = 1;
 let deck = [];
 let playerHand = [];
 let dealerHand = [];
@@ -2963,7 +3462,7 @@ bjStand.addEventListener('click', ()=>{
 });
 
 // ---- DICE ----
-let diceBetAmount = 10;
+let diceBetAmount = 1;
 let selectedDiceBet = null;
 const die1El = document.getElementById('die1');
 const die2El = document.getElementById('die2');
@@ -3053,7 +3552,7 @@ rollDiceBtn.addEventListener('click', ()=>{
 });
 
 // ---- AVIATOR ----
-let aviatorBetAmount = 10;
+let aviatorBetAmount = 1;
 let aviatorState = 'waiting';
 let aviatorHasBet = false;
 let aviatorCashedOut = false;
@@ -3225,7 +3724,7 @@ aviatorCashoutBtn.addEventListener('click', ()=>{
 
 // ---- MINES ----
 const MINES_TOTAL = 25;
-let minesBetAmount = 10;
+let minesBetAmount = 1;
 let minesCount = 5;
 let minesActive = false;
 let minePositions = [];
@@ -3375,7 +3874,7 @@ minesCashoutBtn.addEventListener('click', ()=>{
 });
 
 // ---- VIDEO POKER ----
-let pokerBetAmount = 10;
+let pokerBetAmount = 1;
 let pokerHand = [];
 let pokerHeld = [false,false,false,false,false];
 let pokerDeck = [];
@@ -3512,7 +4011,7 @@ pokerDrawBtn.addEventListener('click', ()=>{
 });
 
 // ---- BACCARAT ----
-let baccBetAmount = 10;
+let baccBetAmount = 1;
 let selectedBaccBet = null;
 let baccDeck = [];
 
@@ -3640,7 +4139,7 @@ baccDealBtn.addEventListener('click', ()=>{
 // ---- PLINKO ----
 const PLINKO_ROWS = 8;
 const plinkoMultipliers = [5.6, 2.1, 1.1, 1, 0.5, 1, 1.1, 2.1, 5.6];
-let plinkoBetAmount = 10;
+let plinkoBetAmount = 1;
 let plinkoDropping = false;
 
 const plinkoPegs = document.getElementById('plinkoPegs');
@@ -3761,7 +4260,7 @@ const premiumPayout3 = { cereza:8, limon:12, uva:16, campana:30, estrella:60, si
 const premiumPayout4 = { cereza:20, limon:30, uva:40, campana:80, estrella:160, siete:300, joker:800 };
 const premiumPayout5 = { cereza:50, limon:80, uva:120, campana:240, estrella:500, siete:1000, joker:2400 };
 
-let premiumBetAmount = 10;
+let premiumBetAmount = 1;
 const PREMIUM_REELS = 5, PREMIUM_ROWS = 3;
 
 const premiumGrid = document.getElementById('premiumGrid');
@@ -3876,6 +4375,682 @@ function evaluatePremiumSpin(midRow){
   updateBalance();
   premiumSpinBtn.disabled = false;
 }
+
+// ---- BINGO (90 bolillas, línea o cartón lleno) ----
+const BINGO_DRAWS = 60; // de las 90 bolillas se cantan 60 por partida
+const BINGO_LINE_MULT = 2;
+const BINGO_FULL_MULT = 245;
+let bingoBetAmount = 1;
+let bingoPlaying = false;
+
+const bingoBoardGrid = document.getElementById('bingoBoardGrid');
+const bingoCardGrid = document.getElementById('bingoCardGrid');
+const bingoCurrentLabel = document.getElementById('bingoCurrentLabel');
+const bingoMsg = document.getElementById('bingoMsg');
+const bingoPlayBtn = document.getElementById('bingoPlayBtn');
+
+// tablero de las 90 bolillas (1 a 90), se van iluminando a medida que se cantan
+const bingoBoardCells = {};
+for(let n=1;n<=90;n++){
+  const cell = document.createElement('div');
+  cell.className = 'bingo-ball';
+  cell.textContent = n;
+  bingoBoardGrid.appendChild(cell);
+  bingoBoardCells[n] = cell;
+}
+
+bindBetInput('bingoBetMinus', 'bingoBetPlus', 'bingoBet', ()=>bingoBetAmount, v=>bingoBetAmount=v);
+
+function generateBingoCard(){
+  // columnas: 1-9, 10-19, 20-29 ... 80-90 (la ultima con 11 numeros)
+  const cols = [];
+  for(let c=0;c<9;c++){
+    const lo = c===0 ? 1 : c*10+1;
+    const hi = c===8 ? 90 : c*10+10;
+    const pool = [];
+    for(let n=lo;n<=hi;n++) pool.push(n);
+    cols.push(pool);
+  }
+
+  // elegir 15 celdas (de las 27 posibles) con exactamente 5 por fila y hasta 3 por columna
+  let chosen;
+  while(true){
+    const cells = [];
+    for(let r=0;r<3;r++) for(let c=0;c<9;c++) cells.push([r,c]);
+    for(let i=cells.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [cells[i],cells[j]]=[cells[j],cells[i]]; }
+    const rowCounts=[0,0,0], colCounts=[0,0,0,0,0,0,0,0,0];
+    chosen = [];
+    for(const [r,c] of cells){
+      if(chosen.length>=15) break;
+      if(rowCounts[r]<5 && colCounts[c]<3){
+        chosen.push([r,c]);
+        rowCounts[r]++; colCounts[c]++;
+      }
+    }
+    if(chosen.length===15 && rowCounts.every(x=>x===5)) break;
+  }
+
+  const card = [[null,null,null,null,null,null,null,null,null],
+                [null,null,null,null,null,null,null,null,null],
+                [null,null,null,null,null,null,null,null,null]];
+  const usedByCol = [[],[],[],[],[],[],[],[],[]];
+  chosen.forEach(([r,c])=>{
+    const pool = cols[c];
+    let num;
+    do{ num = pool[Math.floor(Math.random()*pool.length)]; } while(usedByCol[c].includes(num));
+    usedByCol[c].push(num);
+    card[r][c] = num;
+  });
+  return card;
+}
+
+function renderBingoCard(card, marked){
+  bingoCardGrid.innerHTML = '';
+  for(let r=0;r<3;r++){
+    for(let c=0;c<9;c++){
+      const cell = document.createElement('div');
+      const num = card[r][c];
+      if(num === null){
+        cell.className = 'bingo-cell empty';
+      } else {
+        cell.className = 'bingo-cell' + (marked.has(num) ? ' marked' : '');
+        cell.textContent = num;
+      }
+      bingoCardGrid.appendChild(cell);
+    }
+  }
+}
+
+bingoPlayBtn.addEventListener('click', ()=>{
+  if(bingoPlaying) return;
+  if(balance < bingoBetAmount){
+    bingoMsg.textContent = 'Saldo insuficiente';
+    return;
+  }
+  balance -= bingoBetAmount;
+  updateBalance();
+  bingoPlaying = true;
+  bingoPlayBtn.disabled = true;
+  bingoMsg.textContent = 'Cantando bolillas...';
+
+  // resetear tablero visual
+  for(let n=1;n<=90;n++){
+    bingoBoardCells[n].classList.remove('called','current');
+  }
+
+  const card = generateBingoCard();
+  const rows = [0,1,2].map(r => new Set(card[r].filter(n=>n!==null)));
+  const allNumbers = new Set(card.flat().filter(n=>n!==null));
+  const marked = new Set();
+  renderBingoCard(card, marked);
+
+  // orden aleatorio de las 90 bolillas, se cantan las primeras BINGO_DRAWS
+  const pool = [];
+  for(let n=1;n<=90;n++) pool.push(n);
+  for(let i=pool.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [pool[i],pool[j]]=[pool[j],pool[i]]; }
+  const drawOrder = pool.slice(0, BINGO_DRAWS);
+
+  let i = 0;
+  const interval = setInterval(()=>{
+    const num = drawOrder[i];
+    bingoBoardCells[num].classList.add('called');
+    Object.values(bingoBoardCells).forEach(c=>c.classList.remove('current'));
+    bingoBoardCells[num].classList.add('current');
+    bingoCurrentLabel.textContent = 'Bolilla cantada: ' + num;
+
+    if(allNumbers.has(num)){
+      marked.add(num);
+      renderBingoCard(card, marked);
+    }
+
+    i++;
+    if(i >= drawOrder.length){
+      clearInterval(interval);
+      finishBingo(allNumbers, rows, marked);
+    }
+  }, 90);
+});
+
+function finishBingo(allNumbers, rows, marked){
+  const gotFull = [...allNumbers].every(n => marked.has(n));
+  const gotLine = rows.some(row => [...row].every(n => marked.has(n)));
+
+  if(gotFull && applyBetDifficulty(bingoBetAmount, true)){
+    const win = bingoBetAmount * BINGO_FULL_MULT;
+    balance += win;
+    bingoMsg.textContent = '¡¡¡BINGO!!! Cartón lleno — ganaste ' + win + ' fichas';
+    playWin(); playCoin();
+  } else if(gotLine && applyBetDifficulty(bingoBetAmount, true)){
+    const win = bingoBetAmount * BINGO_LINE_MULT;
+    balance += win;
+    bingoMsg.textContent = '¡Línea completa! Ganaste ' + win + ' fichas';
+    playWin(); playCoin();
+  } else {
+    bingoMsg.textContent = 'No completaste línea ni cartón esta vez';
+    playLose();
+  }
+  updateBalance();
+  bingoPlaying = false;
+  bingoPlayBtn.disabled = false;
+}
+
+// ==================== KENO ====================
+const KENO_PAYTABLES = {
+  4:  {2:1, 3:9, 4:95},
+  8:  {3:1, 4:3, 5:12, 6:55, 7:300, 8:2200},
+  10: {4:1, 5:4, 6:24, 7:95, 8:600, 9:3200, 10:16000}
+};
+let kenoPicksCount = 4;
+let kenoBetAmount = 1;
+let kenoSelected = new Set();
+let kenoPlaying = false;
+
+const kenoGrid = document.getElementById('kenoGrid');
+const kenoMsg = document.getElementById('kenoMsg');
+const kenoPlayBtn = document.getElementById('kenoPlayBtn');
+const kenoPaytableEl = document.getElementById('kenoPaytable');
+const kenoCells = {};
+
+for(let n=1;n<=80;n++){
+  const cell = document.createElement('div');
+  cell.className = 'keno-cell';
+  cell.textContent = n;
+  cell.addEventListener('click', ()=>{
+    if(kenoPlaying) return;
+    if(kenoSelected.has(n)){
+      kenoSelected.delete(n);
+      cell.classList.remove('picked');
+    } else {
+      if(kenoSelected.size >= kenoPicksCount){
+        kenoMsg.textContent = 'Ya elegiste ' + kenoPicksCount + ' números — sacá uno para cambiar';
+        return;
+      }
+      kenoSelected.add(n);
+      cell.classList.add('picked');
+    }
+  });
+  kenoGrid.appendChild(cell);
+  kenoCells[n] = cell;
+}
+
+function renderKenoPaytable(){
+  const table = KENO_PAYTABLES[kenoPicksCount];
+  let html = 'Con ' + kenoPicksCount + ' números elegidos: ';
+  html += Object.keys(table).map(m => m + ' aciertos = x' + table[m]).join(' · ');
+  kenoPaytableEl.innerHTML = html;
+}
+renderKenoPaytable();
+
+document.querySelectorAll('.keno-config .bet-option').forEach(opt=>{
+  opt.addEventListener('click', ()=>{
+    if(kenoPlaying) return;
+    document.querySelectorAll('.keno-config .bet-option').forEach(o=>o.classList.remove('selected'));
+    opt.classList.add('selected');
+    kenoPicksCount = parseInt(opt.dataset.picks);
+    kenoSelected.forEach(n => kenoCells[n].classList.remove('picked'));
+    kenoSelected.clear();
+    renderKenoPaytable();
+    kenoMsg.textContent = 'Elegí ' + kenoPicksCount + ' números';
+  });
+});
+
+bindBetInput('kenoBetMinus', 'kenoBetPlus', 'kenoBet', ()=>kenoBetAmount, v=>kenoBetAmount=v);
+
+kenoPlayBtn.addEventListener('click', ()=>{
+  if(kenoPlaying) return;
+  if(kenoSelected.size !== kenoPicksCount){
+    kenoMsg.textContent = 'Elegí exactamente ' + kenoPicksCount + ' números';
+    return;
+  }
+  if(balance < kenoBetAmount){
+    kenoMsg.textContent = 'Saldo insuficiente';
+    return;
+  }
+  balance -= kenoBetAmount;
+  updateBalance();
+  kenoPlaying = true;
+  kenoPlayBtn.disabled = true;
+  for(let n=1;n<=80;n++) kenoCells[n].classList.remove('hit','missed-drawn');
+  kenoMsg.textContent = 'Sorteando 20 bolillas...';
+
+  const pool = [];
+  for(let n=1;n<=80;n++) pool.push(n);
+  for(let i=pool.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [pool[i],pool[j]]=[pool[j],pool[i]]; }
+  const drawn = pool.slice(0,20);
+
+  let i = 0;
+  const interval = setInterval(()=>{
+    const num = drawn[i];
+    if(kenoSelected.has(num)) kenoCells[num].classList.add('hit');
+    else kenoCells[num].classList.add('missed-drawn');
+    playTick();
+    i++;
+    if(i >= drawn.length){
+      clearInterval(interval);
+      const matches = [...kenoSelected].filter(n => drawn.includes(n)).length;
+      const table = KENO_PAYTABLES[kenoPicksCount];
+      const mult = table[matches] || 0;
+      if(mult > 0 && applyBetDifficulty(kenoBetAmount, true)){
+        const win = kenoBetAmount * mult;
+        balance += win;
+        kenoMsg.textContent = matches + ' aciertos — ¡Ganaste ' + win + ' fichas! (x' + mult + ')';
+        playWin(); playCoin();
+      } else {
+        kenoMsg.textContent = matches + ' aciertos — sin premio';
+        playLose();
+      }
+      updateBalance();
+      kenoPlaying = false;
+      kenoPlayBtn.disabled = false;
+    }
+  }, 110);
+});
+
+// ==================== RASCA Y GANA ====================
+const SCRATCH_SYMBOLS = ['cereza','limon','trebol','diamante','estrella','siete'];
+const SCRATCH_WEIGHTS = [32, 25, 18, 13, 9, 3];
+const SCRATCH_EMOJI = { cereza:'🍒', limon:'🍋', trebol:'🍀', diamante:'💎', estrella:'⭐', siete:'7️⃣' };
+const SCRATCH_PAYOUT = { cereza:1, limon:2, trebol:4, diamante:9, estrella:30, siete:150 };
+const SCRATCH_LINES = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+let scratchBetAmount = 1;
+let scratchPlaying = false;
+
+const scratchGrid = document.getElementById('scratchGrid');
+const scratchMsg = document.getElementById('scratchMsg');
+const scratchPlayBtn = document.getElementById('scratchPlayBtn');
+const scratchCellEls = [];
+for(let i=0;i<9;i++){
+  const cell = document.createElement('div');
+  cell.className = 'scratch-cell';
+  cell.textContent = '❔';
+  scratchGrid.appendChild(cell);
+  scratchCellEls.push(cell);
+}
+
+function pickScratchSymbol(){
+  const total = SCRATCH_WEIGHTS.reduce((a,b)=>a+b,0);
+  let r = Math.random()*total;
+  for(let i=0;i<SCRATCH_SYMBOLS.length;i++){
+    if(r < SCRATCH_WEIGHTS[i]) return SCRATCH_SYMBOLS[i];
+    r -= SCRATCH_WEIGHTS[i];
+  }
+  return SCRATCH_SYMBOLS[0];
+}
+
+bindBetInput('scratchBetMinus', 'scratchBetPlus', 'scratchBet', ()=>scratchBetAmount, v=>scratchBetAmount=v);
+
+scratchPlayBtn.addEventListener('click', ()=>{
+  if(scratchPlaying) return;
+  if(balance < scratchBetAmount){
+    scratchMsg.textContent = 'Saldo insuficiente';
+    return;
+  }
+  balance -= scratchBetAmount;
+  updateBalance();
+  scratchPlaying = true;
+  scratchPlayBtn.disabled = true;
+  scratchMsg.textContent = 'Raspando...';
+  scratchCellEls.forEach(c => { c.classList.remove('win-line'); c.textContent = '❔'; });
+
+  const results = [];
+  for(let i=0;i<9;i++) results.push(pickScratchSymbol());
+
+  let revealed = 0;
+  const interval = setInterval(()=>{
+    scratchCellEls[revealed].textContent = SCRATCH_EMOJI[results[revealed]];
+    playCardFlip();
+    revealed++;
+    if(revealed >= 9){
+      clearInterval(interval);
+      let bestPayout = 0;
+      let bestLine = null;
+      SCRATCH_LINES.forEach(line=>{
+        const [a,b,c] = line;
+        if(results[a] === results[b] && results[b] === results[c]){
+          const pay = SCRATCH_PAYOUT[results[a]];
+          if(pay > bestPayout){ bestPayout = pay; bestLine = line; }
+        }
+      });
+
+      if(bestPayout > 0 && applyBetDifficulty(scratchBetAmount, true)){
+        bestLine.forEach(idx => scratchCellEls[idx].classList.add('win-line'));
+        const win = scratchBetAmount * bestPayout;
+        balance += win;
+        scratchMsg.textContent = '¡Ganaste ' + win + ' fichas! (x' + bestPayout + ')';
+        playWin(); playCoin();
+      } else {
+        scratchMsg.textContent = 'Sin suerte esta vez';
+        playLose();
+      }
+      updateBalance();
+      scratchPlaying = false;
+      scratchPlayBtn.disabled = false;
+    }
+  }, 140);
+});
+
+// ==================== MAYOR O MENOR (HILO) ====================
+let hiloBetAmount = 1;
+let hiloDeck = [];
+let hiloCurrent = null;
+let hiloMultHigher = 0;
+let hiloMultLower = 0;
+let hiloActive = false;
+
+const hiloCurrentCardEl = document.getElementById('hiloCurrentCard');
+const hiloNextCardEl = document.getElementById('hiloNextCard');
+const hiloMsg = document.getElementById('hiloMsg');
+const hiloMultRow = document.getElementById('hiloMultRow');
+const hiloStartBtn = document.getElementById('hiloStartBtn');
+const hiloActions = document.getElementById('hiloActions');
+const hiloHigherBtn = document.getElementById('hiloHigherBtn');
+const hiloLowerBtn = document.getElementById('hiloLowerBtn');
+
+function paintCardInto(container, card, hidden){
+  if(hidden || !card){
+    container.className = 'card back';
+    container.innerHTML = '';
+  } else {
+    container.className = 'card ' + card.cls;
+    container.innerHTML = card.rank + '<span class="suit">' + card.suit + '</span>';
+  }
+}
+
+bindBetInput('hiloBetMinus', 'hiloBetPlus', 'hiloBet', ()=>hiloBetAmount, v=>hiloBetAmount=v);
+
+hiloStartBtn.addEventListener('click', ()=>{
+  if(hiloActive) return;
+  if(balance < hiloBetAmount){
+    hiloMsg.textContent = 'Saldo insuficiente';
+    return;
+  }
+  balance -= hiloBetAmount;
+  updateBalance();
+  hiloActive = true;
+
+  hiloDeck = freshDeck();
+  hiloCurrent = hiloDeck.pop();
+  paintCardInto(hiloCurrentCardEl, hiloCurrent, false);
+  paintCardInto(hiloNextCardEl, null, true);
+  playCardFlip();
+
+  const curVal = rankValue(hiloCurrent.rank);
+  const remaining = hiloDeck;
+  const higherCount = remaining.filter(c => rankValue(c.rank) > curVal).length;
+  const lowerCount = remaining.filter(c => rankValue(c.rank) < curVal).length;
+  const pHigher = higherCount / remaining.length;
+  const pLower = lowerCount / remaining.length;
+  hiloMultHigher = pHigher > 0 ? Math.round((0.95/pHigher)*100)/100 : 0;
+  hiloMultLower = pLower > 0 ? Math.round((0.95/pLower)*100)/100 : 0;
+
+  hiloMultRow.innerHTML =
+    '<span>▲ Más alta: x' + (hiloMultHigher||'—') + '</span>' +
+    '<span>▼ Más baja: x' + (hiloMultLower||'—') + '</span>';
+
+  hiloHigherBtn.disabled = hiloMultHigher === 0;
+  hiloLowerBtn.disabled = hiloMultLower === 0;
+  hiloMsg.textContent = '¿La próxima carta es más alta o más baja?';
+  hiloStartBtn.style.display = 'none';
+  hiloActions.style.display = 'grid';
+});
+
+function resolveHilo(choice){
+  if(!hiloActive) return;
+  hiloHigherBtn.disabled = true;
+  hiloLowerBtn.disabled = true;
+
+  const next = hiloDeck.pop();
+  paintCardInto(hiloNextCardEl, next, false);
+  playCardFlip();
+
+  const curVal = rankValue(hiloCurrent.rank);
+  const nextVal = rankValue(next.rank);
+
+  if(nextVal === curVal){
+    balance += hiloBetAmount;
+    hiloMsg.textContent = 'Empate — se devuelve tu apuesta';
+    playClick();
+  } else {
+    const won = (choice === 'higher' && nextVal > curVal) || (choice === 'lower' && nextVal < curVal);
+    const mult = choice === 'higher' ? hiloMultHigher : hiloMultLower;
+    if(won && applyBetDifficulty(hiloBetAmount, true)){
+      const win = Math.round(hiloBetAmount * mult);
+      balance += win;
+      hiloMsg.textContent = '¡Acertaste! Ganaste ' + win + ' fichas';
+      playWin(); playCoin();
+    } else {
+      hiloMsg.textContent = 'No acertaste — perdiste tu apuesta';
+      playLose();
+    }
+  }
+  updateBalance();
+  hiloActive = false;
+  hiloStartBtn.style.display = 'block';
+  hiloActions.style.display = 'none';
+  hiloMultRow.innerHTML = '';
+}
+
+hiloHigherBtn.addEventListener('click', ()=> resolveHilo('higher'));
+hiloLowerBtn.addEventListener('click', ()=> resolveHilo('lower'));
+
+// ==================== SIC BO ====================
+let sicboBetAmount = 1;
+let sicboSelected = [];
+let sicboRolling = false;
+
+const sicboMsg = document.getElementById('sicboMsg');
+const sicboRollBtn = document.getElementById('sicboRollBtn');
+const sicboDieEls = [document.getElementById('sicboDie1'), document.getElementById('sicboDie2'), document.getElementById('sicboDie3')];
+const sicboNumbersEl = document.getElementById('sicboNumbers');
+
+for(let n=1;n<=6;n++){
+  const btn = document.createElement('div');
+  btn.className = 'bet-option';
+  btn.innerHTML = n + '<span class="payout">según aciertos</span>';
+  btn.dataset.sicboNum = n;
+  sicboNumbersEl.appendChild(btn);
+}
+
+function sicboToggle(bet, el){
+  const idx = sicboSelected.findIndex(b => b.type === bet.type && b.value === bet.value);
+  if(idx >= 0){
+    sicboSelected.splice(idx,1);
+    el.classList.remove('selected');
+  } else {
+    sicboSelected.push(bet);
+    el.classList.add('selected');
+  }
+}
+document.querySelectorAll('#sicboBetOptions .bet-option').forEach(opt=>{
+  opt.addEventListener('click', ()=> sicboToggle({type: opt.dataset.sicbo}, opt));
+});
+document.querySelectorAll('#sicboNumbers .bet-option').forEach(opt=>{
+  opt.addEventListener('click', ()=> sicboToggle({type:'number', value: parseInt(opt.dataset.sicboNum)}, opt));
+});
+
+bindBetInput('sicboBetMinus', 'sicboBetPlus', 'sicboBet', ()=>sicboBetAmount, v=>sicboBetAmount=v);
+
+sicboRollBtn.addEventListener('click', ()=>{
+  if(sicboRolling) return;
+  if(sicboSelected.length === 0){
+    sicboMsg.textContent = 'Elegí al menos una apuesta';
+    return;
+  }
+  const totalCost = sicboBetAmount * sicboSelected.length;
+  if(balance < totalCost){
+    sicboMsg.textContent = 'Saldo insuficiente para todas tus apuestas';
+    return;
+  }
+  balance -= totalCost;
+  updateBalance();
+  sicboRolling = true;
+  sicboRollBtn.disabled = true;
+  sicboMsg.textContent = 'Tirando los dados...';
+  sicboDieEls.forEach(d => d.classList.add('rolling'));
+
+  const results = [1,2,3].map(()=> 1 + Math.floor(Math.random()*6));
+  let ticks = 0;
+  const interval = setInterval(()=>{
+    sicboDieEls.forEach(d => d.innerHTML = buildDieFace(1 + Math.floor(Math.random()*6)));
+    playTick();
+    ticks++;
+    if(ticks >= 12){
+      clearInterval(interval);
+      sicboDieEls.forEach((d,i)=>{
+        d.classList.remove('rolling');
+        d.innerHTML = buildDieFace(results[i]);
+      });
+
+      const sum = results[0]+results[1]+results[2];
+      const isTriple = results[0]===results[1] && results[1]===results[2];
+
+      let totalWin = 0;
+      sicboSelected.forEach(bet=>{
+        let win = 0;
+        if(bet.type === 'grande' && sum>=11 && sum<=17 && !isTriple) win = sicboBetAmount*2;
+        else if(bet.type === 'chica' && sum>=4 && sum<=10 && !isTriple) win = sicboBetAmount*2;
+        else if(bet.type === 'number'){
+          const count = results.filter(r=>r===bet.value).length;
+          if(count>0) win = sicboBetAmount*(count+1);
+        }
+        if(win > 0 && applyBetDifficulty(sicboBetAmount, true)) totalWin += win;
+      });
+
+      if(totalWin > 0){
+        balance += totalWin;
+        sicboMsg.textContent = 'Salió ' + sum + ' — ¡Ganaste ' + totalWin + ' fichas!';
+        playWin(); playCoin();
+      } else {
+        sicboMsg.textContent = 'Salió ' + sum + ' — sin premio';
+        playLose();
+      }
+      updateBalance();
+      sicboRolling = false;
+      sicboRollBtn.disabled = false;
+    }
+  }, 90);
+});
+
+// ==================== RUEDA DE LA SUERTE ====================
+// 16 gajos parejos y bien visibles (nada de porciones microscópicas que no se ven)
+const FORTUNE_SEGMENTS = [
+  {mult:0,   weight:1}, {mult:1, weight:1}, {mult:0, weight:1}, {mult:1, weight:1},
+  {mult:0,   weight:1}, {mult:1.5, weight:1}, {mult:1, weight:1}, {mult:0, weight:1},
+  {mult:2,   weight:1}, {mult:1, weight:1}, {mult:0, weight:1}, {mult:1, weight:1},
+  {mult:0,   weight:1}, {mult:1, weight:1}, {mult:5, weight:1}, {mult:0, weight:1}
+];
+let wheelBetAmount = 1;
+let wheelSpinning = false;
+let wheelRotationTotal = 0;
+
+const fortuneWheel = document.getElementById('fortuneWheel');
+const fortuneWedges = document.getElementById('fortuneWedges');
+const wheelMsg = document.getElementById('wheelMsg');
+const wheelSpinBtn = document.getElementById('wheelSpinBtn');
+
+const FORTUNE_COLORS = ['#1a1a1a','#7a1c1c','#14663a','#1a1a1a','#7a1c1c','#14663a','#1a1a1a','#7a1c1c','#a86c10'];
+const fortuneTotalWeight = FORTUNE_SEGMENTS.reduce((a,s)=>a+s.weight,0);
+let cumulative = 0;
+const fortuneAngles = FORTUNE_SEGMENTS.map(s=>{
+  const startAngle = (cumulative/fortuneTotalWeight)*360;
+  cumulative += s.weight;
+  const endAngle = (cumulative/fortuneTotalWeight)*360;
+  return {startAngle, endAngle, mult: s.mult};
+});
+
+(function buildFortuneWheel(){
+  const cx=120, cy=120, r=115;
+  fortuneAngles.forEach((seg, i)=>{
+    const a0 = (seg.startAngle - 90) * Math.PI/180;
+    const a1 = (seg.endAngle - 90) * Math.PI/180;
+    const x0 = cx + r*Math.cos(a0), y0 = cy + r*Math.sin(a0);
+    const x1 = cx + r*Math.cos(a1), y1 = cy + r*Math.sin(a1);
+    const largeArc = (seg.endAngle-seg.startAngle) > 180 ? 1 : 0;
+    const path = document.createElementNS('http://www.w3.org/2000/svg','path');
+    path.setAttribute('d', `M${cx},${cy} L${x0.toFixed(2)},${y0.toFixed(2)} A${r},${r} 0 ${largeArc},1 ${x1.toFixed(2)},${y1.toFixed(2)} Z`);
+    path.setAttribute('fill', FORTUNE_COLORS[i % FORTUNE_COLORS.length]);
+    path.setAttribute('stroke', '#050005');
+    path.setAttribute('stroke-width', '1');
+    fortuneWedges.appendChild(path);
+
+    const midAngle = (seg.startAngle+seg.endAngle)/2;
+    const labelR = r*0.68;
+    const la = (midAngle-90)*Math.PI/180;
+    const lx = cx + labelR*Math.cos(la), ly = cy + labelR*Math.sin(la);
+    const text = document.createElementNS('http://www.w3.org/2000/svg','text');
+    text.setAttribute('x', lx.toFixed(2));
+    text.setAttribute('y', ly.toFixed(2));
+    text.setAttribute('fill', '#f5e8b8');
+    text.setAttribute('font-size', '13');
+    text.setAttribute('font-family', 'Georgia, serif');
+    text.setAttribute('font-weight', 'bold');
+    text.setAttribute('text-anchor', 'middle');
+    text.setAttribute('dominant-baseline', 'middle');
+    text.setAttribute('transform', `rotate(${midAngle} ${lx.toFixed(2)} ${ly.toFixed(2)})`);
+    text.textContent = 'x' + seg.mult;
+    fortuneWedges.appendChild(text);
+  });
+})();
+
+function pickFortuneSegment(){
+  let r = Math.random()*fortuneTotalWeight;
+  for(let i=0;i<FORTUNE_SEGMENTS.length;i++){
+    if(r < FORTUNE_SEGMENTS[i].weight) return i;
+    r -= FORTUNE_SEGMENTS[i].weight;
+  }
+  return 0;
+}
+
+bindBetInput('wheelBetMinus', 'wheelBetPlus', 'wheelBet', ()=>wheelBetAmount, v=>wheelBetAmount=v);
+
+wheelSpinBtn.addEventListener('click', ()=>{
+  if(wheelSpinning) return;
+  if(balance < wheelBetAmount){
+    wheelMsg.textContent = 'Saldo insuficiente';
+    return;
+  }
+  balance -= wheelBetAmount;
+  updateBalance();
+  wheelSpinning = true;
+  wheelSpinBtn.disabled = true;
+  wheelMsg.textContent = 'Girando...';
+
+  const segIdx = pickFortuneSegment();
+  const seg = fortuneAngles[segIdx];
+  const midAngle = (seg.startAngle+seg.endAngle)/2;
+  const targetRotation = 360 - midAngle;
+  const currentMod = wheelRotationTotal % 360;
+  const delta = ((targetRotation - currentMod) + 360) % 360;
+  wheelRotationTotal += 1440 + delta;
+  fortuneWheel.style.transform = 'rotate(' + wheelRotationTotal + 'deg)';
+  for(let i=0;i<16;i++){ setTimeout(playBounce, i*180); }
+
+  setTimeout(()=>{
+    const mult = FORTUNE_SEGMENTS[segIdx].mult;
+    if(mult > 0 && applyBetDifficulty(wheelBetAmount, true)){
+      const win = Math.round(wheelBetAmount * mult);
+      if(win > wheelBetAmount){
+        balance += win;
+        wheelMsg.textContent = 'Cayó en x' + mult + ' — ¡Ganaste ' + (win-wheelBetAmount) + ' fichas!';
+        playWin(); playCoin();
+      } else if(win === wheelBetAmount){
+        balance += win;
+        wheelMsg.textContent = 'Cayó en x' + mult + ' — empate, recuperaste tu apuesta';
+        playClick();
+      } else {
+        balance += win;
+        wheelMsg.textContent = 'Cayó en x' + mult + ' — perdiste parte de tu apuesta';
+        playLose();
+      }
+    } else {
+      wheelMsg.textContent = 'Cayó en x' + mult + ' — perdiste tu apuesta';
+      playLose();
+    }
+    updateBalance();
+    wheelSpinning = false;
+    wheelSpinBtn.disabled = false;
+  }, 3500);
+});
 
 })(); // fin del bloque aislado
 </script>
