@@ -111,6 +111,17 @@ async function initDB(){
   await pool.query(`CREATE INDEX IF NOT EXISTS idx_game_rounds_created_at ON game_rounds (created_at);`);
   await pool.query(`CREATE INDEX IF NOT EXISTS idx_game_rounds_game ON game_rounds (game);`);
 
+  // Marca el momento en que el súper admin "reinicia" el contador de
+  // ganancia y pérdida — las jugadas de antes quedan guardadas igual (nunca
+  // se borran), solo que el panel de gráficos arranca a sumar de cero desde
+  // ese momento en adelante.
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS stats_resets (
+      id SERIAL PRIMARY KEY,
+      reset_at TIMESTAMP DEFAULT NOW()
+    );
+  `);
+
   const existing = await pool.query('SELECT id FROM users WHERE email = $1', [SUPERADMIN_EMAIL]);
   if(existing.rows.length === 0){
     const hash = await bcrypt.hash(SUPERADMIN_PASSWORD, 10);
@@ -424,10 +435,14 @@ app.get('/api/admin/stats', async (req, res) => {
     }
 
     const days = Math.min(90, Math.max(1, parseInt(req.query.days, 10) || 30));
+    // el punto de partida real es lo que sea MÁS RECIENTE entre "hace N días"
+    // y la última vez que se reinició el contador — así lo ya reiniciado
+    // nunca vuelve a aparecer, sin importar el rango de días elegido.
+    const cutoffClause = `GREATEST(NOW() - ($1::text || ' days')::interval, COALESCE((SELECT MAX(reset_at) FROM stats_resets), '-infinity'::timestamp))`;
 
     const totals = await pool.query(
       `SELECT COALESCE(SUM(bet_amount),0) AS total_bet, COALESCE(SUM(win_amount),0) AS total_win, COUNT(*) AS total_rounds
-       FROM game_rounds WHERE created_at >= NOW() - ($1 || ' days')::interval`,
+       FROM game_rounds WHERE created_at >= ${cutoffClause}`,
       [days]
     );
 
@@ -436,7 +451,7 @@ app.get('/api/admin/stats', async (req, res) => {
               COALESCE(SUM(bet_amount),0) AS total_bet,
               COALESCE(SUM(win_amount),0) AS total_win
        FROM game_rounds
-       WHERE created_at >= NOW() - ($1 || ' days')::interval
+       WHERE created_at >= ${cutoffClause}
        GROUP BY day ORDER BY day ASC`,
       [days]
     );
@@ -447,12 +462,29 @@ app.get('/api/admin/stats', async (req, res) => {
               COALESCE(SUM(win_amount),0) AS total_win,
               COUNT(*) AS total_rounds
        FROM game_rounds
-       WHERE created_at >= NOW() - ($1 || ' days')::interval
+       WHERE created_at >= ${cutoffClause}
        GROUP BY game ORDER BY (SUM(bet_amount) - SUM(win_amount)) DESC`,
       [days]
     );
 
     res.json({ ok: true, days, totals: totals.rows[0], byDay: byDay.rows, byGame: byGame.rows });
+  }catch(err){
+    console.error(err);
+    res.status(500).json({ error: 'Error del servidor' });
+  }
+});
+
+// ---- REINICIAR EL CONTADOR DE GANANCIA Y PÉRDIDA (solo súper admin) ----
+// No borra ninguna jugada — solo marca desde cuándo se vuelve a contar en
+// el panel de gráficos, para poder llevar un conteo mes a mes.
+app.post('/api/admin/stats/reset', async (req, res) => {
+  try{
+    const requester = await getAuthenticatedUser(req.body.token);
+    if(!requester || requester.role !== 'superadmin'){
+      return res.status(403).json({ error: 'Solo el súper admin puede reiniciar el contador' });
+    }
+    await pool.query('INSERT INTO stats_resets DEFAULT VALUES');
+    res.json({ ok: true });
   }catch(err){
     console.error(err);
     res.status(500).json({ error: 'Error del servidor' });

@@ -2053,6 +2053,7 @@
       <div class="bet-option selected" data-days="30">30 días</div>
       <div class="bet-option" data-days="90">90 días</div>
     </div>
+    <button class="admin-role-btn" id="statsResetBtn" style="width:100%; margin-bottom:14px; color:#e5a7a7; border-color:var(--red);">🔄 Reiniciar contador (empezar de cero)</button>
     <div id="statsContent">Cargando...</div>
   </div>
 
@@ -2896,6 +2897,10 @@ async function renderAdminPanel(){
     if(hasBackend){
       const res = await fetch('/api/users?token=' + encodeURIComponent(getSessionToken() || ''));
       const data = await res.json();
+      if(!res.ok || !data.users){
+        list.innerHTML = 'No se pudo cargar la lista de usuarios (' + (data.error || 'sesión vencida, volvé a iniciar sesión') + ')';
+        return;
+      }
       users = data.users;
     } else {
       users = Object.values(localDB.users);
@@ -3291,6 +3296,19 @@ document.querySelectorAll('#statsRangeRow .bet-option').forEach(opt=>{
     statsSelectedDays = parseInt(opt.dataset.days, 10);
     renderStats();
   });
+});
+
+document.getElementById('statsResetBtn').addEventListener('click', async function(){
+  if(!confirm('¿Reiniciar el contador de ganancia y pérdida? Las jugadas de antes no se borran, solo dejan de contarse — el panel va a arrancar a sumar de cero desde ahora.')) return;
+  this.disabled = true;
+  try{
+    await apiCall('/api/admin/stats/reset', { token: getSessionToken() });
+    renderStats();
+  } catch(err){
+    alert(err.message || 'No se pudo reiniciar el contador');
+  } finally {
+    this.disabled = false;
+  }
 });
 
 // ---- NAVEGACIÓN LOBBY <-> JUEGO ----
