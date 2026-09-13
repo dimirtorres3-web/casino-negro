@@ -82,6 +82,35 @@ async function initDB(){
     );
   `);
 
+  // Marca el momento en que el súper admin "liquida" cuentas con un
+  // administrador — desde ese momento, los totales del historial arrancan
+  // de cero de nuevo, sin borrar los movimientos viejos (quedan como
+  // registro histórico, solo que ya no se suman al total actual).
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS ledger_settlements (
+      id SERIAL PRIMARY KEY,
+      admin_email TEXT NOT NULL,
+      settled_at TIMESTAMP DEFAULT NOW()
+    );
+  `);
+
+  // Cada jugada individual (de cualquiera de los 16 juegos) queda registrada
+  // acá — cuánto se apostó y cuánto se pagó. Sirve para armar los gráficos
+  // de ganancia y pérdida de la casa.
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS game_rounds (
+      id SERIAL PRIMARY KEY,
+      player_email TEXT NOT NULL,
+      player_name TEXT NOT NULL,
+      game TEXT NOT NULL,
+      bet_amount INTEGER NOT NULL,
+      win_amount INTEGER NOT NULL DEFAULT 0,
+      created_at TIMESTAMP DEFAULT NOW()
+    );
+  `);
+  await pool.query(`CREATE INDEX IF NOT EXISTS idx_game_rounds_created_at ON game_rounds (created_at);`);
+  await pool.query(`CREATE INDEX IF NOT EXISTS idx_game_rounds_game ON game_rounds (game);`);
+
   const existing = await pool.query('SELECT id FROM users WHERE email = $1', [SUPERADMIN_EMAIL]);
   if(existing.rows.length === 0){
     const hash = await bcrypt.hash(SUPERADMIN_PASSWORD, 10);
@@ -240,9 +269,9 @@ app.post('/api/role', async (req, res) => {
 
     const targetEmail = (req.body.targetEmail || '').trim().toLowerCase();
     const role = req.body.role;
-    if(!['user', 'admin'].includes(role)) return res.status(400).json({ error: 'Rol inválido' });
+    if(!['user', 'admin', 'superadmin'].includes(role)) return res.status(400).json({ error: 'Rol inválido' });
     if(targetEmail === SUPERADMIN_EMAIL){
-      return res.status(400).json({ error: 'No se puede cambiar el rol del súper admin' });
+      return res.status(400).json({ error: 'No se puede cambiar el rol del súper admin original' });
     }
 
     await pool.query('UPDATE users SET role = $1 WHERE email = $2', [role, targetEmail]);
@@ -332,7 +361,98 @@ app.get('/api/admin/ledger', async (req, res) => {
     const result = await pool.query(
       'SELECT admin_email, admin_name, target_email, target_name, amount, created_at FROM balance_adjustments ORDER BY created_at DESC LIMIT 500'
     );
-    res.json({ ok: true, movements: result.rows });
+    const settlements = await pool.query(
+      'SELECT admin_email, MAX(settled_at) AS settled_at FROM ledger_settlements GROUP BY admin_email'
+    );
+    res.json({ ok: true, movements: result.rows, settlements: settlements.rows });
+  }catch(err){
+    console.error(err);
+    res.status(500).json({ error: 'Error del servidor' });
+  }
+});
+
+// ---- LIQUIDAR CUENTAS CON UN ADMINISTRADOR (solo súper admin) ----
+// No borra el historial viejo — solo marca a partir de qué momento se
+// vuelven a contar los totales de cargas y pagos desde cero.
+app.post('/api/admin/ledger/settle', async (req, res) => {
+  try{
+    const requester = await getAuthenticatedUser(req.body.token);
+    if(!requester || requester.role !== 'superadmin'){
+      return res.status(403).json({ error: 'Solo el súper admin puede liquidar cuentas' });
+    }
+    const adminEmail = (req.body.adminEmail || '').trim().toLowerCase();
+    if(!adminEmail) return res.status(400).json({ error: 'Falta indicar el administrador' });
+
+    await pool.query('INSERT INTO ledger_settlements (admin_email) VALUES ($1)', [adminEmail]);
+    res.json({ ok: true });
+  }catch(err){
+    console.error(err);
+    res.status(500).json({ error: 'Error del servidor' });
+  }
+});
+
+// ---- REGISTRAR UNA JUGADA (cualquier jugador logueado, en cualquier juego) ----
+// Se llama automáticamente después de cada tirada/mano/ronda, para poder
+// armar después los gráficos de ganancia y pérdida de la casa.
+app.post('/api/game-round', async (req, res) => {
+  try{
+    const user = await getAuthenticatedUser(req.body.token);
+    if(!user) return res.status(401).json({ error: 'Sesión inválida' });
+
+    const game = (req.body.game || '').trim();
+    const bet = parseInt(req.body.bet, 10);
+    const win = parseInt(req.body.win, 10) || 0;
+    if(!game || isNaN(bet) || bet <= 0) return res.status(400).json({ error: 'Datos inválidos' });
+
+    await pool.query(
+      'INSERT INTO game_rounds (player_email, player_name, game, bet_amount, win_amount) VALUES ($1,$2,$3,$4,$5)',
+      [user.email, user.name, game, bet, win]
+    );
+    res.json({ ok: true });
+  }catch(err){
+    console.error(err);
+    res.status(500).json({ error: 'Error del servidor' });
+  }
+});
+
+// ---- ESTADÍSTICAS DE GANANCIA Y PÉRDIDA (solo súper admin) ----
+app.get('/api/admin/stats', async (req, res) => {
+  try{
+    const requester = await getAuthenticatedUser(req.query.token);
+    if(!requester || requester.role !== 'superadmin'){
+      return res.status(403).json({ error: 'Solo el súper admin puede ver las estadísticas' });
+    }
+
+    const days = Math.min(90, Math.max(1, parseInt(req.query.days, 10) || 30));
+
+    const totals = await pool.query(
+      `SELECT COALESCE(SUM(bet_amount),0) AS total_bet, COALESCE(SUM(win_amount),0) AS total_win, COUNT(*) AS total_rounds
+       FROM game_rounds WHERE created_at >= NOW() - ($1 || ' days')::interval`,
+      [days]
+    );
+
+    const byDay = await pool.query(
+      `SELECT TO_CHAR(created_at, 'YYYY-MM-DD') AS day,
+              COALESCE(SUM(bet_amount),0) AS total_bet,
+              COALESCE(SUM(win_amount),0) AS total_win
+       FROM game_rounds
+       WHERE created_at >= NOW() - ($1 || ' days')::interval
+       GROUP BY day ORDER BY day ASC`,
+      [days]
+    );
+
+    const byGame = await pool.query(
+      `SELECT game,
+              COALESCE(SUM(bet_amount),0) AS total_bet,
+              COALESCE(SUM(win_amount),0) AS total_win,
+              COUNT(*) AS total_rounds
+       FROM game_rounds
+       WHERE created_at >= NOW() - ($1 || ' days')::interval
+       GROUP BY game ORDER BY (SUM(bet_amount) - SUM(win_amount)) DESC`,
+      [days]
+    );
+
+    res.json({ ok: true, days, totals: totals.rows[0], byDay: byDay.rows, byGame: byGame.rows });
   }catch(err){
     console.error(err);
     res.status(500).json({ error: 'Error del servidor' });

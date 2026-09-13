@@ -1786,6 +1786,83 @@
   .ledger-row-amount{ font-weight:bold; white-space:nowrap; margin-left:8px; }
   .ledger-row-amount.pos{ color: var(--green); }
   .ledger-row-amount.neg{ color: var(--red); }
+
+  /* ---- GANANCIA Y PÉRDIDA ---- */
+  .stats-range-row{
+    display:flex;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+  .stats-summary-row{
+    display:flex;
+    gap: 10px;
+    margin-bottom: 18px;
+  }
+  .stats-summary-box{
+    flex:1;
+    background: linear-gradient(160deg, var(--panel2), #100820);
+    border: 1px solid var(--gold-dim);
+    border-radius: 12px;
+    padding: 12px 8px;
+    text-align:center;
+  }
+  .stats-summary-box .lbl{ font-size: 10px; color: var(--text-dim); letter-spacing:0.5px; }
+  .stats-summary-box .val{ font-size: 16px; font-weight:bold; margin-top:4px; }
+  .stats-summary-box.profit .val{ color: var(--gold); }
+  .stats-summary-box.wagered .val{ color: var(--text); }
+  .stats-summary-box.rounds .val{ color: var(--text); }
+  .stats-chart-wrap{
+    background: var(--panel);
+    border: 1px solid var(--gold-dim);
+    border-radius: 12px;
+    padding: 14px 10px;
+    margin-bottom: 18px;
+    overflow-x: auto;
+  }
+  .stats-chart-title{
+    font-size: 12px;
+    color: var(--gold);
+    margin-bottom: 10px;
+    text-align:center;
+  }
+  .stats-game-row{
+    display:flex;
+    align-items:center;
+    gap: 8px;
+    margin-bottom: 8px;
+    font-size: 11px;
+  }
+  .stats-game-name{
+    width: 88px;
+    flex-shrink:0;
+    color: var(--text-dim);
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+  .stats-game-bar-track{
+    flex:1;
+    background: #05000c;
+    border-radius: 6px;
+    height: 18px;
+    position:relative;
+    overflow:hidden;
+  }
+  .stats-game-bar{
+    height: 100%;
+    border-radius: 6px;
+  }
+  .stats-game-bar.pos{ background: var(--green); }
+  .stats-game-bar.neg{ background: var(--red); }
+  .stats-game-val{
+    width: 70px;
+    flex-shrink:0;
+    text-align:right;
+    font-weight:bold;
+    font-size: 11px;
+  }
+  .stats-game-val.pos{ color: var(--green); }
+  .stats-game-val.neg{ color: var(--red); }
   .recharge-row{
     display:flex;
     align-items:center;
@@ -1941,6 +2018,7 @@
     </div>
     <div class="game-title-label">Panel de administración</div>
     <button class="admin-btn hidden" id="ledgerBtn" style="margin-bottom:16px;">📒 HISTORIAL DE CARGAS Y PAGOS</button>
+    <button class="admin-btn hidden" id="statsBtn" style="margin-bottom:16px;">📊 GANANCIA Y PÉRDIDA</button>
     <div id="adminUserList"></div>
   </div>
 
@@ -1957,6 +2035,24 @@
     <div id="ledgerSummary"></div>
     <div class="game-title-label" style="font-size:12px; margin-top:16px;">Movimientos recientes</div>
     <div id="ledgerList"></div>
+  </div>
+
+  <!-- ============ PANTALLA: GANANCIA Y PÉRDIDA ============ -->
+  <div id="screenStats" class="screen">
+    <div class="topbar-inline">
+      <button class="back-btn" id="statsBackBtn">← Volver</button>
+      <div class="topbar-balance">
+        <div class="chip-icon"></div>
+        <span class="balance-value">1000</span>
+      </div>
+    </div>
+    <div class="game-title-label">Ganancia y pérdida de la casa</div>
+    <div class="stats-range-row" id="statsRangeRow">
+      <div class="bet-option" data-days="7">7 días</div>
+      <div class="bet-option selected" data-days="30">30 días</div>
+      <div class="bet-option" data-days="90">90 días</div>
+    </div>
+    <div id="statsContent">Cargando...</div>
   </div>
 
   <!-- ============ PANTALLA: JUEGO ============ -->
@@ -1986,8 +2082,8 @@
       </div>
       <button class="spin-btn" id="spinBtn">GIRAR</button>
       <div class="paytable">
-        7️⃣ 7️⃣ 7️⃣ = x60 &nbsp;·&nbsp; 💎 💎 💎 = x18 &nbsp;·&nbsp; 🔔 🔔 🔔 = x9<br>
-        🍋 🍋 🍋 = x6 &nbsp;·&nbsp; 🍒 🍒 🍒 = x4 &nbsp;·&nbsp; dos 🍒 = x1.2
+        7️⃣ 7️⃣ 7️⃣ = x51 &nbsp;·&nbsp; 💎 💎 💎 = x22 &nbsp;·&nbsp; 🔔 🔔 🔔 = x12<br>
+        🍋 🍋 🍋 = x8 &nbsp;·&nbsp; 🍒 🍒 🍒 = x5 &nbsp;·&nbsp; dos 🍒 = x1
       </div>
     </div>
   </section>
@@ -2062,9 +2158,9 @@
       </div>
       <div class="dice-msg" id="diceMsg">Elegí tu apuesta</div>
       <div class="dice-bet-options">
-        <div class="bet-option" data-dicebet="under">Menor a 7<span class="payout">x2</span></div>
-        <div class="bet-option" data-dicebet="seven">Exacto 7<span class="payout">x5</span></div>
-        <div class="bet-option" data-dicebet="over">Mayor a 7<span class="payout">x2</span></div>
+        <div class="bet-option" data-dicebet="under">Menor a 7<span class="payout">x1.7</span></div>
+        <div class="bet-option" data-dicebet="seven">Exacto 7<span class="payout">x4.2</span></div>
+        <div class="bet-option" data-dicebet="over">Mayor a 7<span class="payout">x1.7</span></div>
       </div>
       <div class="bet-row">
         <button id="diceBetMinus">−</button>
@@ -2218,8 +2314,8 @@
         <button class="premium-spin-btn" id="premiumSpinBtn">↻</button>
       </div>
       <div class="premium-paytable">
-        🃏🃏🃏🃏🃏 x4500 &nbsp;·&nbsp; 7️⃣7️⃣7️⃣7️⃣7️⃣ x850 &nbsp;·&nbsp; ⭐⭐⭐⭐⭐ x370<br>
-        🔔🔔🔔🔔🔔 x168 &nbsp;·&nbsp; 🍇🍇🍇🍇🍇 x84 &nbsp;·&nbsp; 🍋🍋🍋🍋🍋 x56 &nbsp;·&nbsp; 🍒🍒🍒🍒🍒 x33<br>
+        🃏🃏🃏🃏🃏 x3825 &nbsp;·&nbsp; 7️⃣7️⃣7️⃣7️⃣7️⃣ x723 &nbsp;·&nbsp; ⭐⭐⭐⭐⭐ x315<br>
+        🔔🔔🔔🔔🔔 x143 &nbsp;·&nbsp; 🍇🍇🍇🍇🍇 x71 &nbsp;·&nbsp; 🍋🍋🍋🍋🍋 x48 &nbsp;·&nbsp; 🍒🍒🍒🍒🍒 x28<br>
         Pagan 3, 4 o 5 símbolos iguales seguidos desde el rodillo 1
       </div>
     </div>
@@ -2243,7 +2339,7 @@
       <button class="spin-btn" id="bingoPlayBtn">COMPRAR CARTÓN Y JUGAR</button>
       <div class="bingo-paytable">
         Se cantan 60 de las 90 bolillas.<br>
-        <b>Línea</b> (una fila completa) = x2 &nbsp;·&nbsp; <b>¡BINGO!</b> (cartón lleno) = x245
+        <b>Línea</b> (una fila completa) = x1.7 &nbsp;·&nbsp; <b>¡BINGO!</b> (cartón lleno) = x208
       </div>
     </div>
   </section>
@@ -2281,7 +2377,7 @@
       <button class="spin-btn" id="scratchPlayBtn">COMPRAR Y RASPAR</button>
       <div class="scratch-paytable">
         Ganás con 3 símbolos iguales en línea (fila, columna o diagonal)<br>
-        🍒x1 · 🍋x2 · 🍀x3 · 💎x7 · 🔮x16 · ⭐x45 · 👑x200 · 7️⃣x1500
+        🍒x1 · 🍋x2 · 🍀x3 · 💎x6 · 🔮x14 · ⭐x38 · 👑x171 · 7️⃣x1280
       </div>
     </div>
   </section>
@@ -2317,8 +2413,8 @@
       </div>
       <div class="sicbo-msg" id="sicboMsg">Elegí una o más apuestas</div>
       <div class="sicbo-bet-options" id="sicboBetOptions">
-        <div class="bet-option" data-sicbo="grande">Grande (11-17)<span class="payout">x1.9</span></div>
-        <div class="bet-option" data-sicbo="chica">Chica (4-10)<span class="payout">x1.9</span></div>
+        <div class="bet-option" data-sicbo="grande">Grande (11-17)<span class="payout">x1.6</span></div>
+        <div class="bet-option" data-sicbo="chica">Chica (4-10)<span class="payout">x1.6</span></div>
       </div>
       <div style="text-align:center; font-size:11px; color:var(--text-dim); margin-bottom:8px;">O elegí un número (paga según cuántos dados lo muestren):</div>
       <div class="sicbo-numbers" id="sicboNumbers"></div>
@@ -2492,6 +2588,20 @@ function bindBetInput(minusId, plusId, inputId, getBet, setBet){
     setBet(v);
     input.value = v;
   });
+}
+
+// Registra una jugada terminada (apuesta y lo que pagó) para los gráficos de
+// ganancia/pérdida del súper admin. Nunca interrumpe el juego si falla —
+// es de "mandar y olvidarse", no bloquea nada visualmente.
+function recordGameRound(game, bet, win){
+  if(!hasBackend) return;
+  const token = getSessionToken();
+  if(!token || !bet || bet <= 0) return;
+  fetch('/api/game-round', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ token: token, game: game, bet: bet, win: win || 0 })
+  }).catch(function(){});
 }
 
 let balance = 1000;
@@ -2705,10 +2815,13 @@ function loginAs(user){
   }
 
   const ledgerBtn = document.getElementById('ledgerBtn');
+  const statsBtn = document.getElementById('statsBtn');
   if(user.role === 'superadmin'){
     ledgerBtn.classList.remove('hidden');
+    statsBtn.classList.remove('hidden');
   } else {
     ledgerBtn.classList.add('hidden');
+    statsBtn.classList.add('hidden');
   }
 }
 
@@ -2756,6 +2869,7 @@ document.getElementById('logoutBtn').addEventListener('click', function(){
   document.getElementById('screenGame').classList.remove('active');
   document.getElementById('screenAdmin').classList.remove('active');
   document.getElementById('screenLedger').classList.remove('active');
+  document.getElementById('screenStats').classList.remove('active');
   document.getElementById('screenAuth').classList.add('active');
   document.getElementById('loginEmail').value = '';
   document.getElementById('loginPassword').value = '';
@@ -2808,26 +2922,38 @@ async function renderAdminPanel(){
 
     row.appendChild(info);
 
-    // solo el súper admin puede ascender/descender administradores, y nunca sobre sí mismo
+    // solo el súper admin puede ascender/descender a otros, y nunca sobre el súper admin original
     if(currentUser.role === 'superadmin' && u.email !== SUPERADMIN_EMAIL){
-      const btn = document.createElement('button');
-      btn.className = 'admin-role-btn';
-      const newRole = u.role === 'admin' ? 'user' : 'admin';
-      btn.textContent = u.role === 'admin' ? 'Quitar admin' : 'Hacer admin';
-      btn.addEventListener('click', async function(){
-        btn.disabled = true;
-        try{
-          if(hasBackend){
-            await apiCall('/api/role', { token: getSessionToken(), targetEmail: u.email, role: newRole });
-          } else if(localDB.users[u.email]){
-            localDB.users[u.email].role = newRole;
+      const roleBtnsWrap = document.createElement('div');
+      roleBtnsWrap.style.cssText = 'display:flex; gap:6px; flex-wrap:wrap;';
+
+      function makeRoleBtn(label, newRole){
+        const btn = document.createElement('button');
+        btn.className = 'admin-role-btn';
+        btn.textContent = label;
+        btn.addEventListener('click', async function(){
+          btn.disabled = true;
+          try{
+            if(hasBackend){
+              await apiCall('/api/role', { token: getSessionToken(), targetEmail: u.email, role: newRole });
+            } else if(localDB.users[u.email]){
+              localDB.users[u.email].role = newRole;
+            }
+            renderAdminPanel();
+          } catch(err){
+            btn.disabled = false;
           }
-          renderAdminPanel();
-        } catch(err){
-          btn.disabled = false;
-        }
-      });
-      row.appendChild(btn);
+        });
+        return btn;
+      }
+
+      if(u.role === 'superadmin'){
+        roleBtnsWrap.appendChild(makeRoleBtn('Quitar súper admin', 'admin'));
+      } else {
+        roleBtnsWrap.appendChild(makeRoleBtn(u.role === 'admin' ? 'Quitar admin' : 'Hacer admin', u.role === 'admin' ? 'user' : 'admin'));
+        roleBtnsWrap.appendChild(makeRoleBtn('⭐ Hacer súper admin', 'superadmin'));
+      }
+      row.appendChild(roleBtnsWrap);
     } else {
       row.appendChild(badge);
     }
@@ -2944,11 +3070,13 @@ async function renderLedger(){
   listEl.innerHTML = '';
 
   let movements = [];
+  let settlements = [];
   try{
     const res = await fetch('/api/admin/ledger?token=' + encodeURIComponent(getSessionToken() || ''));
     const data = await res.json();
     if(!res.ok) throw new Error(data.error || 'Error');
     movements = data.movements;
+    settlements = data.settlements || [];
   }catch(err){
     summaryEl.innerHTML = 'No se pudo cargar el historial';
     return;
@@ -2959,9 +3087,16 @@ async function renderLedger(){
     return;
   }
 
-  // agrupar por administrador y por día
+  // desde cuándo cuenta cada administrador (null = desde siempre, todavía no se liquidó nunca)
+  const settledSince = {};
+  settlements.forEach(s => { settledSince[s.admin_email] = new Date(s.settled_at); });
+
+  // agrupar por administrador y por día — solo lo que pasó DESPUÉS de la última liquidación
   const byAdmin = {};
   movements.forEach(m=>{
+    const cutoff = settledSince[m.admin_email];
+    if(cutoff && new Date(m.created_at) <= cutoff) return; // ya liquidado, no se vuelve a contar
+
     if(!byAdmin[m.admin_email]) byAdmin[m.admin_email] = { name: m.admin_name, byDay: {}, totalCargado: 0, totalPagado: 0 };
     const a = byAdmin[m.admin_email];
     const dk = dayKey(m.created_at);
@@ -2976,7 +3111,13 @@ async function renderLedger(){
   });
 
   summaryEl.innerHTML = '';
-  Object.values(byAdmin).forEach(a=>{
+  const adminsConMovimiento = Object.keys(byAdmin);
+  if(adminsConMovimiento.length === 0){
+    summaryEl.innerHTML = '<div class="recharge-empty">Todo liquidado — todavía no hay movimientos nuevos</div>';
+  }
+
+  Object.keys(byAdmin).forEach(adminEmail=>{
+    const a = byAdmin[adminEmail];
     const card = document.createElement('div');
     card.className = 'ledger-admin-card';
     let daysHtml = '';
@@ -2986,12 +3127,35 @@ async function renderLedger(){
         '<span>' + dk + '</span>' +
         '<span>Cargó Gs. ' + fmtGuaranies(d.cargado) + ' · Pagó Gs. ' + fmtGuaranies(d.pagado) + '</span></div>';
     });
-    card.innerHTML =
-      '<div class="ledger-admin-name">' + a.name + '</div>' +
+
+    const nameRow = document.createElement('div');
+    nameRow.style.cssText = 'display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;';
+    nameRow.innerHTML = '<div class="ledger-admin-name" style="margin-bottom:0;">' + a.name + '</div>';
+
+    const settleBtn = document.createElement('button');
+    settleBtn.className = 'admin-role-btn';
+    settleBtn.textContent = '🔄 Liquidar';
+    settleBtn.addEventListener('click', async function(){
+      if(!confirm('¿Ya arreglaste cuentas con ' + a.name + '? Esto va a poner los totales en cero para empezar de nuevo. El historial viejo no se borra, solo deja de sumarse.')) return;
+      settleBtn.disabled = true;
+      try{
+        await apiCall('/api/admin/ledger/settle', { token: getSessionToken(), adminEmail: adminEmail });
+        renderLedger();
+      }catch(err){
+        settleBtn.disabled = false;
+        alert(err.message || 'No se pudo liquidar');
+      }
+    });
+    nameRow.appendChild(settleBtn);
+
+    card.appendChild(nameRow);
+    const restDiv = document.createElement('div');
+    restDiv.innerHTML =
       '<div class="ledger-totals">' +
         '<div class="ledger-total-box cargado"><div class="lbl">TOTAL CARGADO</div><div class="val">Gs. ' + fmtGuaranies(a.totalCargado) + '</div></div>' +
         '<div class="ledger-total-box pagado"><div class="lbl">TOTAL PAGADO</div><div class="val">Gs. ' + fmtGuaranies(a.totalPagado) + '</div></div>' +
       '</div>' + daysHtml;
+    while(restDiv.firstChild) card.appendChild(restDiv.firstChild);
     summaryEl.appendChild(card);
   });
 
@@ -3000,8 +3164,11 @@ async function renderLedger(){
     const row = document.createElement('div');
     row.className = 'ledger-row';
     const isPos = m.amount > 0;
+    const cutoff = settledSince[m.admin_email];
+    const yaLiquidado = cutoff && new Date(m.created_at) <= cutoff;
+    if(yaLiquidado) row.style.opacity = '0.4';
     row.innerHTML =
-      '<div class="ledger-row-info">' + fmtDate(m.created_at) + '<br><b>' + m.admin_name + '</b> → ' + m.target_name + '</div>' +
+      '<div class="ledger-row-info">' + fmtDate(m.created_at) + (yaLiquidado ? ' · <i>liquidado</i>' : '') + '<br><b>' + m.admin_name + '</b> → ' + m.target_name + '</div>' +
       '<div class="ledger-row-amount ' + (isPos ? 'pos' : 'neg') + '">' + (isPos ? '+' : '') + fmtGuaranies(m.amount) + '</div>';
     listEl.appendChild(row);
   });
@@ -3016,6 +3183,113 @@ document.getElementById('ledgerBtn').addEventListener('click', function(){
 document.getElementById('ledgerBackBtn').addEventListener('click', function(){
   document.getElementById('screenLedger').classList.remove('active');
   document.getElementById('screenAdmin').classList.add('active');
+});
+
+// ---- GANANCIA Y PÉRDIDA (gráficos) ----
+const GAME_LABELS = {
+  slots: 'Tragamonedas', roulette: 'Ruleta', blackjack: 'Blackjack', dice: 'Dados',
+  aviator: 'Aviator', mines: 'Minas', poker: 'Video Poker', baccarat: 'Baccarat', plinko: 'Plinko',
+  premium: 'Premium Slot', bingo: 'Bingo', keno: 'Keno', scratch: 'Rasca y Gana',
+  hilo: 'Mayor o Menor', sicbo: 'Sic Bo', fortunewheel: 'Rueda de la Suerte'
+};
+let statsSelectedDays = 30;
+
+async function renderStats(){
+  const el = document.getElementById('statsContent');
+  el.innerHTML = 'Cargando...';
+
+  let data;
+  try{
+    const res = await fetch('/api/admin/stats?token=' + encodeURIComponent(getSessionToken() || '') + '&days=' + statsSelectedDays);
+    data = await res.json();
+    if(!res.ok) throw new Error(data.error || 'Error');
+  }catch(err){
+    el.innerHTML = 'No se pudo cargar las estadísticas';
+    return;
+  }
+
+  const totalBet = parseInt(data.totals.total_bet, 10) || 0;
+  const totalWinAmt = parseInt(data.totals.total_win, 10) || 0;
+  const totalRounds = parseInt(data.totals.total_rounds, 10) || 0;
+  const houseProfit = totalBet - totalWinAmt;
+
+  if(totalRounds === 0){
+    el.innerHTML = '<div class="recharge-empty">Todavía no hay jugadas registradas en este período</div>';
+    return;
+  }
+
+  let html = '';
+  html += '<div class="stats-summary-row">' +
+    '<div class="stats-summary-box wagered"><div class="lbl">TOTAL APOSTADO</div><div class="val">Gs. ' + fmtGuaranies(totalBet) + '</div></div>' +
+    '<div class="stats-summary-box profit"><div class="lbl">GANANCIA CASA</div><div class="val">Gs. ' + fmtGuaranies(houseProfit) + '</div></div>' +
+    '<div class="stats-summary-box rounds"><div class="lbl">JUGADAS</div><div class="val">' + totalRounds.toLocaleString('es-PY') + '</div></div>' +
+  '</div>';
+
+  // gráfico de barras: ganancia de la casa por día
+  html += '<div class="stats-chart-wrap"><div class="stats-chart-title">Ganancia de la casa por día</div>';
+  if(data.byDay.length === 0){
+    html += '<div class="recharge-empty">Sin datos por día todavía</div>';
+  } else {
+    const dayProfits = data.byDay.map(d => (parseInt(d.total_bet,10)||0) - (parseInt(d.total_win,10)||0));
+    const maxAbs = Math.max(1, ...dayProfits.map(v=>Math.abs(v)));
+    const barW = 26, gap = 6, chartH = 120, midY = chartH/2;
+    const svgW = data.byDay.length * (barW+gap) + gap;
+    html += '<svg width="' + svgW + '" height="' + (chartH+34) + '" viewBox="0 0 ' + svgW + ' ' + (chartH+34) + '">';
+    html += '<line x1="0" y1="' + midY + '" x2="' + svgW + '" y2="' + midY + '" stroke="#3a3a3a" stroke-width="1"/>';
+    data.byDay.forEach((d, i)=>{
+      const profit = dayProfits[i];
+      const h = Math.abs(profit)/maxAbs * (chartH/2 - 4);
+      const x = gap + i*(barW+gap);
+      const y = profit >= 0 ? midY - h : midY;
+      const color = profit >= 0 ? 'var(--green)' : 'var(--red)';
+      const dayLabel = d.day.slice(5).replace('-', '/');
+      html += '<rect x="' + x + '" y="' + y + '" width="' + barW + '" height="' + Math.max(h,1) + '" fill="' + color + '" rx="3"></rect>';
+      html += '<text x="' + (x+barW/2) + '" y="' + (chartH+16) + '" font-size="9" fill="#a08cc0" text-anchor="middle" transform="rotate(45 ' + (x+barW/2) + ' ' + (chartH+16) + ')">' + dayLabel + '</text>';
+    });
+    html += '</svg>';
+  }
+  html += '</div>';
+
+  // desglose por juego
+  html += '<div class="stats-chart-wrap"><div class="stats-chart-title">Ganancia por juego</div>';
+  const gameProfits = data.byGame.map(g => ({
+    game: g.game,
+    label: GAME_LABELS[g.game] || g.game,
+    profit: (parseInt(g.total_bet,10)||0) - (parseInt(g.total_win,10)||0)
+  }));
+  const maxGameAbs = Math.max(1, ...gameProfits.map(g=>Math.abs(g.profit)));
+  gameProfits.forEach(g=>{
+    const pct = Math.abs(g.profit)/maxGameAbs*100;
+    const cls = g.profit >= 0 ? 'pos' : 'neg';
+    html += '<div class="stats-game-row">' +
+      '<div class="stats-game-name">' + g.label + '</div>' +
+      '<div class="stats-game-bar-track"><div class="stats-game-bar ' + cls + '" style="width:' + pct.toFixed(1) + '%;"></div></div>' +
+      '<div class="stats-game-val ' + cls + '">' + (g.profit>=0?'+':'') + fmtGuaranies(g.profit) + '</div>' +
+    '</div>';
+  });
+  html += '</div>';
+
+  el.innerHTML = html;
+}
+
+document.getElementById('statsBtn').addEventListener('click', function(){
+  renderStats();
+  document.getElementById('screenAdmin').classList.remove('active');
+  document.getElementById('screenStats').classList.add('active');
+});
+
+document.getElementById('statsBackBtn').addEventListener('click', function(){
+  document.getElementById('screenStats').classList.remove('active');
+  document.getElementById('screenAdmin').classList.add('active');
+});
+
+document.querySelectorAll('#statsRangeRow .bet-option').forEach(opt=>{
+  opt.addEventListener('click', function(){
+    document.querySelectorAll('#statsRangeRow .bet-option').forEach(o=>o.classList.remove('selected'));
+    opt.classList.add('selected');
+    statsSelectedDays = parseInt(opt.dataset.days, 10);
+    renderStats();
+  });
 });
 
 // ---- NAVEGACIÓN LOBBY <-> JUEGO ----
@@ -3056,8 +3330,8 @@ document.getElementById('soundToggleBtn').addEventListener('click', function(){
 });
 
 // ---- SLOTS ----
-const symbols = ['🍒','🍋','🔔','💎','7️⃣'];
-const weights =  [40, 27, 19, 10, 4]; // menor peso = menos probable
+const symbols = ['♠️','🍒','🍋','🔔','💎','7️⃣']; // ♠️ = símbolo de relleno, no paga nada (como en una máquina real)
+const weights =  [16, 22, 16, 10, 5.5, 1.5]; // menor peso = menos probable
 function pickSymbol(){
   const total = weights.reduce((a,b)=>a+b,0);
   let r = Math.random()*total;
@@ -3074,6 +3348,30 @@ const spinBtn = document.getElementById('spinBtn');
 const slotMsg = document.getElementById('slotMsg');
 const reels = [document.getElementById('reel0'), document.getElementById('reel1'), document.getElementById('reel2')];
 
+let slotBlankRespinDone = false; // controla que el giro gratis por relleno pase una sola vez
+
+function runSlotReels(onComplete){
+  reels.forEach(r=>r.classList.add('spinning'));
+  const spins = [12,16,20];
+  const spinResults = [pickSymbol(), pickSymbol(), pickSymbol()];
+  reels.forEach((reel, idx)=>{
+    let count = 0;
+    const interval = setInterval(()=>{
+      reel.textContent = pickSymbol();
+      playTick();
+      count++;
+      if(count >= spins[idx]){
+        clearInterval(interval);
+        reel.textContent = spinResults[idx];
+        reel.classList.remove('spinning');
+        if(idx === reels.length-1){
+          onComplete(spinResults);
+        }
+      }
+    }, 60);
+  });
+}
+
 spinBtn.addEventListener('click', ()=>{
   if(balance < slotBet){
     slotMsg.textContent = 'Saldo insuficiente';
@@ -3083,50 +3381,48 @@ spinBtn.addEventListener('click', ()=>{
   updateBalance();
   spinBtn.disabled = true;
   slotMsg.textContent = 'Girando...';
-  reels.forEach(r=>r.classList.add('spinning'));
-
-  const spins = [12,16,20];
-  const results = [pickSymbol(), pickSymbol(), pickSymbol()];
-
-  reels.forEach((reel, idx)=>{
-    let count = 0;
-    const interval = setInterval(()=>{
-      reel.textContent = pickSymbol();
-      playTick();
-      count++;
-      if(count >= spins[idx]){
-        clearInterval(interval);
-        reel.textContent = results[idx];
-        reel.classList.remove('spinning');
-        if(idx === reels.length-1){
-          evaluateSlot(results);
-        }
-      }
-    }, 60);
-  });
+  slotBlankRespinDone = false;
+  runSlotReels(evaluateSlot);
 });
 
 function evaluateSlot(results){
-  let mult = 0;
   const [a,b,c] = results;
-  if(a===b && b===c){
-    if(a==='7️⃣') mult = 60;
-    else if(a==='💎') mult = 18;
-    else if(a==='🔔') mult = 9;
-    else if(a==='🍋') mult = 6;
-    else if(a==='🍒') mult = 4;
-  } else if(a==='🍒' && b==='🍒' || b==='🍒' && c==='🍒' || a==='🍒' && c==='🍒'){
-    mult = 1.2;
+
+  // si cayeron los 3 símbolos de relleno, la máquina gira sola una vez más
+  // gratis (sin cobrar otra ficha) — así no se ve como un resultado raro sin
+  // explicación. Si ese giro gratis también sale relleno, ahí sí se resuelve
+  // como una tirada perdida normal, sin volver a repetirse.
+  if(a==='♠️' && b==='♠️' && c==='♠️' && !slotBlankRespinDone){
+    slotBlankRespinDone = true;
+    slotMsg.textContent = '¡Giro gratis!';
+    setTimeout(()=>{
+      slotMsg.textContent = 'Girando...';
+      runSlotReels(evaluateSlot);
+    }, 700);
+    return;
   }
 
+  let mult = 0;
+  if(a===b && b===c){
+    if(a==='7️⃣') mult = 51;
+    else if(a==='💎') mult = 22;
+    else if(a==='🔔') mult = 12;
+    else if(a==='🍋') mult = 8;
+    else if(a==='🍒') mult = 5;
+  } else if(a==='🍒' && b==='🍒' || b==='🍒' && c==='🍒' || a==='🍒' && c==='🍒'){
+    mult = 1;
+  }
+
+  let slotWin = 0;
   if(mult > 0 && applyBetDifficulty(slotBet, true)){
-    const win = Math.round(slotBet * mult);
-    balance += win;
-    slotMsg.textContent = '¡Ganaste ' + win + ' fichas! (x' + mult + ')';
+    slotWin = Math.round(slotBet * mult);
+    balance += slotWin;
+    slotMsg.textContent = '¡Ganaste ' + slotWin + ' fichas! (x' + mult + ')';
     playWin(); playCoin();
   } else {
     slotMsg.textContent = 'Sin suerte esta vez';
   }
+  recordGameRound('slots', slotBet, slotWin);
   updateBalance();
   spinBtn.disabled = false;
 }
@@ -3285,6 +3581,7 @@ spinRouletteBtn.addEventListener('click', ()=>{
       rouletteMsg.textContent = 'Cayó en ' + landing + ' — Sin premio';
       playLose();
     }
+    recordGameRound('roulette', rouletteBet * selectedBets.length, totalWin);
     updateBalance();
     spinRouletteBtn.disabled = false;
   }, 3000);
@@ -3389,15 +3686,19 @@ function endBlackjack(text, playerWin, push){
     playerWin = false;
     text = text.replace(/¡?[Gg]anaste.*$/, 'perdiste, no era tu día');
   }
+  let bjWin = 0;
   if(playerWin){
-    balance += bjBetAmount * (push ? 1 : 2);
+    bjWin = bjBetAmount * (push ? 1 : 2);
+    balance += bjWin;
     playWin(); playCoin();
   } else if(push){
-    balance += bjBetAmount;
+    bjWin = bjBetAmount;
+    balance += bjWin;
     playClick();
   } else {
     playLose();
   }
+  recordGameRound('blackjack', bjBetAmount, bjWin);
   bjMsg.textContent = text;
   updateBalance();
 }
@@ -3539,11 +3840,13 @@ rollDiceBtn.addEventListener('click', ()=>{
       diceTotalEl.textContent = total;
 
       let win = 0;
-      if(selectedDiceBet === 'under' && total < 7) win = diceBetAmount * 2;
-      else if(selectedDiceBet === 'over' && total > 7) win = diceBetAmount * 2;
-      else if(selectedDiceBet === 'seven' && total === 7) win = diceBetAmount * 5;
+      if(selectedDiceBet === 'under' && total < 7) win = Math.round(diceBetAmount * 1.7);
+      else if(selectedDiceBet === 'over' && total > 7) win = Math.round(diceBetAmount * 1.7);
+      else if(selectedDiceBet === 'seven' && total === 7) win = Math.round(diceBetAmount * 4.2);
 
+      let diceActualWin = 0;
       if(win > 0 && applyBetDifficulty(diceBetAmount, true)){
+        diceActualWin = win;
         balance += win;
         diceMsg.textContent = 'Salió ' + total + ' — ¡Ganaste ' + win + ' fichas!';
         playWin(); playCoin();
@@ -3551,6 +3854,7 @@ rollDiceBtn.addEventListener('click', ()=>{
         diceMsg.textContent = 'Salió ' + total + ' — Sin premio';
         playLose();
       }
+      recordGameRound('dice', diceBetAmount, diceActualWin);
       updateBalance();
       rollDiceBtn.disabled = false;
     }
@@ -3583,7 +3887,7 @@ const aviatorCashoutBtn = document.getElementById('aviatorCashoutBtn');
 bindBetInput('avBetMinus', 'avBetPlus', 'aviatorBet', ()=>aviatorBetAmount, v=>aviatorBetAmount=v);
 
 function generateCrashPoint(bet){
-  const houseEdge = 0.08 + betDifficultyPenalty(bet || 0); // apuestas altas: la casa se protege más, el avión vuela menos
+  const houseEdge = 0.20 + betDifficultyPenalty(bet || 0); // apuestas altas: la casa se protege más, el avión vuela menos
   const r = Math.random();
   if(r < houseEdge) return 1.00;
   let crash = (1 / (1 - r)) * (1 - houseEdge);
@@ -3692,6 +3996,7 @@ function crashNow(){
   if(aviatorHasBet && !aviatorCashedOut){
     aviatorMsg.textContent = 'Voló en x' + aviatorMultiplier.toFixed(2) + ' — perdiste tu apuesta';
     pushHistory(aviatorMultiplier, false);
+    recordGameRound('aviator', aviatorBetAmount, 0);
   } else if(!aviatorHasBet){
     aviatorMsg.textContent = 'Voló en x' + aviatorMultiplier.toFixed(2);
     pushHistory(aviatorMultiplier, false);
@@ -3723,6 +4028,7 @@ aviatorCashoutBtn.addEventListener('click', ()=>{
   aviatorMsg.textContent = 'Retiraste en x' + aviatorMultiplier.toFixed(2) + ' — +' + win + ' fichas';
   aviatorCashoutBtn.disabled = true;
   pushHistory(aviatorMultiplier, true);
+  recordGameRound('aviator', aviatorBetAmount, win);
   playWin(); playCoin();
 });
 
@@ -3782,7 +4088,7 @@ function minesNextMultiplier(){
   const remainingTiles = MINES_TOTAL - minesRevealedSafe;
   const remainingSafe = (MINES_TOTAL - minesCount) - minesRevealedSafe;
   const stepMult = remainingTiles / remainingSafe;
-  return minesMultiplier * stepMult * 0.96;
+  return minesMultiplier * stepMult * 0.84;
 }
 
 minesPlayBtn.addEventListener('click', ()=>{
@@ -3836,6 +4142,7 @@ mineTiles.forEach(tile=>{
       tile.classList.add('revealed-mine');
       tile.textContent = '💣';
       playCrash();
+      recordGameRound('mines', minesBetAmount, 0);
       endMines(true);
       return;
     }
@@ -3854,9 +4161,11 @@ mineTiles.forEach(tile=>{
         balance += win;
         updateBalance();
         minesMsg.textContent = '¡Todas las casillas seguras! +' + win + ' fichas';
+        recordGameRound('mines', minesBetAmount, win);
         playWin(); playCoin();
       } else {
         minesMsg.textContent = 'Última casilla tenía una mina escondida — perdiste';
+        recordGameRound('mines', minesBetAmount, 0);
         playLose();
       }
       endMines(false);
@@ -3871,9 +4180,11 @@ minesCashoutBtn.addEventListener('click', ()=>{
     balance += win;
     updateBalance();
     minesMsg.textContent = 'Retiraste en x' + minesMultiplier.toFixed(2) + ' — +' + win + ' fichas';
+    recordGameRound('mines', minesBetAmount, win);
     playWin(); playCoin();
   } else {
     minesMsg.textContent = 'El retiro llegó tarde — perdiste la apuesta';
+    recordGameRound('mines', minesBetAmount, 0);
     playLose();
   }
   endMines(false);
@@ -4004,16 +4315,18 @@ pokerDrawBtn.addEventListener('click', ()=>{
   pokerDrawBtn.disabled = true;
   pokerDealBtn.disabled = false;
   pokerDealBtn.textContent = 'JUGAR DE NUEVO';
+  let pokerWin = 0;
   if(result.mult > 0 && applyBetDifficulty(pokerBetAmount, true)){
-    const win = pokerBetAmount * result.mult;
-    balance += win;
+    pokerWin = pokerBetAmount * result.mult;
+    balance += pokerWin;
     updateBalance();
-    pokerMsg.textContent = result.name + ' — ¡Ganaste ' + win + ' fichas!';
+    pokerMsg.textContent = result.name + ' — ¡Ganaste ' + pokerWin + ' fichas!';
     playWin(); playCoin();
   } else {
     pokerMsg.textContent = 'Sin combinación — perdiste';
     playLose();
   }
+  recordGameRound('poker', pokerBetAmount, pokerWin);
 });
 
 // ---- BACCARAT ----
@@ -4113,25 +4426,28 @@ baccDealBtn.addEventListener('click', ()=>{
   let win = 0;
   if(winner === 'tie'){
     if(selectedBaccBet === 'tie'){
-      win = baccBetAmount * 7;
+      win = baccBetAmount * 5;
     } else {
       win = baccBetAmount;
     }
   } else if(winner === selectedBaccBet){
     if(winner === 'banker'){
-      win = Math.round(baccBetAmount * 1.9);
+      win = Math.round(baccBetAmount * 1.7);
     } else {
-      win = Math.round(baccBetAmount * 1.92);
+      win = Math.round(baccBetAmount * 1.75);
     }
   }
 
   const winnerLabel = winner === 'player' ? 'Jugador' : (winner === 'banker' ? 'Banca' : 'Empate');
   const isPush = (winner === 'tie' && selectedBaccBet !== 'tie');
+  let baccActualWin = 0;
   if(isPush){
+    baccActualWin = win;
     balance += win;
     baccMsg.textContent = 'Empate (' + playerTotal + ' vs ' + bankerTotal + ') — se devuelve tu apuesta';
     playClick();
   } else if(win > 0 && applyBetDifficulty(baccBetAmount, true)){
+    baccActualWin = win;
     balance += win;
     baccMsg.textContent = 'Gana ' + winnerLabel + ' (' + playerTotal + ' vs ' + bankerTotal + ') — ¡Ganaste ' + (win - baccBetAmount) + ' fichas!';
     playWin(); playCoin();
@@ -4139,12 +4455,13 @@ baccDealBtn.addEventListener('click', ()=>{
     baccMsg.textContent = 'Gana ' + winnerLabel + ' (' + playerTotal + ' vs ' + bankerTotal + ') — perdiste';
     playLose();
   }
+  recordGameRound('baccarat', baccBetAmount, baccActualWin);
   updateBalance();
 });
 
 // ---- PLINKO ----
 const PLINKO_ROWS = 8;
-const plinkoMultipliers = [15, 3, 1, 0.5, 0.3, 0.5, 1, 3, 15];
+const plinkoMultipliers = [12.7, 2.55, 0.85, 0.42, 0.25, 0.42, 0.85, 2.55, 12.7];
 let plinkoBetAmount = 1;
 let plinkoDropping = false;
 
@@ -4227,15 +4544,19 @@ plinkoDropBtn.addEventListener('click', ()=>{
       const win = Math.round(plinkoBetAmount * mult);
       const isRealWin = win > plinkoBetAmount && applyBetDifficulty(plinkoBetAmount, true);
       plinkoSlotEls[bucket].classList.add('hit');
+      let plinkoActualWin = 0;
       if(isRealWin){
+        plinkoActualWin = win;
         balance += win;
         plinkoMsg.textContent = 'Cayó en x' + mult + ' — ¡Ganaste ' + (win - plinkoBetAmount) + ' fichas!';
         playWin(); playCoin();
       } else if(win === plinkoBetAmount){
+        plinkoActualWin = win;
         balance += win;
         plinkoMsg.textContent = 'Cayó en x' + mult + ' — empate, recuperaste tu apuesta';
         playClick();
       } else if(win > 0 && win < plinkoBetAmount){
+        plinkoActualWin = win;
         balance += win;
         plinkoMsg.textContent = 'Cayó en x' + mult + ' — perdiste ' + (plinkoBetAmount - win) + ' fichas';
         playLose();
@@ -4243,6 +4564,7 @@ plinkoDropBtn.addEventListener('click', ()=>{
         plinkoMsg.textContent = 'Cayó en x' + mult + ' — perdiste tu apuesta';
         playLose();
       }
+      recordGameRound('plinko', plinkoBetAmount, plinkoActualWin);
       updateBalance();
       plinkoDropping = false;
       plinkoDropBtn.disabled = false;
@@ -4262,9 +4584,9 @@ plinkoDropBtn.addEventListener('click', ()=>{
 const premiumSymbols = ['cereza','limon','uva','campana','estrella','siete','joker'];
 const premiumWeights =  [33, 26, 19, 12, 6, 3, 1];
 const premiumEmoji = { cereza:'🍒', limon:'🍋', uva:'🍇', campana:'🔔', estrella:'⭐', siete:'7️⃣', joker:'🃏' };
-const premiumPayout3 = { cereza:5, limon:9, uva:13, campana:26, estrella:52, siete:120, joker:480 };
-const premiumPayout4 = { cereza:14, limon:21, uva:30, campana:58, estrella:118, siete:270, joker:1400 };
-const premiumPayout5 = { cereza:33, limon:56, uva:84, campana:168, estrella:370, siete:850, joker:4500 };
+const premiumPayout3 = { cereza:4, limon:8, uva:11, campana:22, estrella:44, siete:102, joker:408 };
+const premiumPayout4 = { cereza:12, limon:18, uva:26, campana:49, estrella:100, siete:230, joker:1190 };
+const premiumPayout5 = { cereza:28, limon:48, uva:71, campana:143, estrella:315, siete:723, joker:3825 };
 
 let premiumBetAmount = 1;
 const PREMIUM_REELS = 5, PREMIUM_ROWS = 3;
@@ -4366,26 +4688,28 @@ function evaluatePremiumSpin(midRow){
   else if(matchCount === 4) mult = premiumPayout4[first];
   else if(matchCount === 3) mult = premiumPayout3[first];
 
+  let premiumWin = 0;
   if(mult > 0 && applyBetDifficulty(premiumBetAmount, true)){
     for(let col=0; col<matchCount; col++){
       premiumCells[1][col].classList.add('win');
     }
-    const win = premiumBetAmount * mult;
-    balance += win;
-    premiumMsg.textContent = '¡' + matchCount + ' iguales! Ganaste ' + win + ' fichas (x' + mult + ')';
+    premiumWin = premiumBetAmount * mult;
+    balance += premiumWin;
+    premiumMsg.textContent = '¡' + matchCount + ' iguales! Ganaste ' + premiumWin + ' fichas (x' + mult + ')';
     playWin(); playCoin();
   } else {
     premiumMsg.textContent = 'Sin suerte esta vez';
     playLose();
   }
+  recordGameRound('premium', premiumBetAmount, premiumWin);
   updateBalance();
   premiumSpinBtn.disabled = false;
 }
 
 // ---- BINGO (90 bolillas, línea o cartón lleno) ----
 const BINGO_DRAWS = 60; // de las 90 bolillas se cantan 60 por partida
-const BINGO_LINE_MULT = 2;
-const BINGO_FULL_MULT = 245;
+const BINGO_LINE_MULT = 1.7;
+const BINGO_FULL_MULT = 208;
 let bingoBetAmount = 1;
 let bingoPlaying = false;
 
@@ -4521,20 +4845,22 @@ function finishBingo(allNumbers, rows, marked){
   const gotFull = [...allNumbers].every(n => marked.has(n));
   const gotLine = rows.some(row => [...row].every(n => marked.has(n)));
 
+  let bingoWin = 0;
   if(gotFull && applyBetDifficulty(bingoBetAmount, true)){
-    const win = bingoBetAmount * BINGO_FULL_MULT;
-    balance += win;
-    bingoMsg.textContent = '¡¡¡BINGO!!! Cartón lleno — ganaste ' + win + ' fichas';
+    bingoWin = Math.round(bingoBetAmount * BINGO_FULL_MULT);
+    balance += bingoWin;
+    bingoMsg.textContent = '¡¡¡BINGO!!! Cartón lleno — ganaste ' + bingoWin + ' fichas';
     playWin(); playCoin();
   } else if(gotLine && applyBetDifficulty(bingoBetAmount, true)){
-    const win = bingoBetAmount * BINGO_LINE_MULT;
-    balance += win;
-    bingoMsg.textContent = '¡Línea completa! Ganaste ' + win + ' fichas';
+    bingoWin = Math.round(bingoBetAmount * BINGO_LINE_MULT);
+    balance += bingoWin;
+    bingoMsg.textContent = '¡Línea completa! Ganaste ' + bingoWin + ' fichas';
     playWin(); playCoin();
   } else {
     bingoMsg.textContent = 'No completaste línea ni cartón esta vez';
     playLose();
   }
+  recordGameRound('bingo', bingoBetAmount, bingoWin);
   updateBalance();
   bingoPlaying = false;
   bingoPlayBtn.disabled = false;
@@ -4542,7 +4868,7 @@ function finishBingo(allNumbers, rows, marked){
 
 // ==================== KENO ====================
 const KENO_PAYTABLES = {
-  4:  {3:8, 4:170},
+  4:  {3:7, 4:147},
   8:  {5:20, 6:100, 7:600, 8:4500},
   10: {6:25, 7:140, 8:1000, 9:6000, 10:30000}
 };
@@ -4636,15 +4962,17 @@ kenoPlayBtn.addEventListener('click', ()=>{
       const matches = [...kenoSelected].filter(n => drawn.includes(n)).length;
       const table = KENO_PAYTABLES[kenoPicksCount];
       const mult = table[matches] || 0;
+      let kenoWin = 0;
       if(mult > 0 && applyBetDifficulty(kenoBetAmount, true)){
-        const win = kenoBetAmount * mult;
-        balance += win;
-        kenoMsg.textContent = matches + ' aciertos — ¡Ganaste ' + win + ' fichas! (x' + mult + ')';
+        kenoWin = kenoBetAmount * mult;
+        balance += kenoWin;
+        kenoMsg.textContent = matches + ' aciertos — ¡Ganaste ' + kenoWin + ' fichas! (x' + mult + ')';
         playWin(); playCoin();
       } else {
         kenoMsg.textContent = matches + ' aciertos — sin premio';
         playLose();
       }
+      recordGameRound('keno', kenoBetAmount, kenoWin);
       updateBalance();
       kenoPlaying = false;
       kenoPlayBtn.disabled = false;
@@ -4656,7 +4984,7 @@ kenoPlayBtn.addEventListener('click', ()=>{
 const SCRATCH_SYMBOLS = ['cereza','limon','trebol','diamante','perla','estrella','diamante2','siete'];
 const SCRATCH_WEIGHTS = [26, 20, 17, 14, 11, 7, 4, 1];
 const SCRATCH_EMOJI = { cereza:'🍒', limon:'🍋', trebol:'🍀', diamante:'💎', perla:'🔮', estrella:'⭐', diamante2:'👑', siete:'7️⃣' };
-const SCRATCH_PAYOUT = { cereza:1, limon:2, trebol:3, diamante:7, perla:16, estrella:45, diamante2:200, siete:1500 };
+const SCRATCH_PAYOUT = { cereza:1, limon:2, trebol:3, diamante:6, perla:14, estrella:38, diamante2:171, siete:1280 };
 const SCRATCH_LINES = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
 let scratchBetAmount = 1;
 let scratchPlaying = false;
@@ -4718,16 +5046,18 @@ scratchPlayBtn.addEventListener('click', ()=>{
         }
       });
 
+      let scratchWin = 0;
       if(bestPayout > 0 && applyBetDifficulty(scratchBetAmount, true)){
         bestLine.forEach(idx => scratchCellEls[idx].classList.add('win-line'));
-        const win = scratchBetAmount * bestPayout;
-        balance += win;
-        scratchMsg.textContent = '¡Ganaste ' + win + ' fichas! (x' + bestPayout + ')';
+        scratchWin = scratchBetAmount * bestPayout;
+        balance += scratchWin;
+        scratchMsg.textContent = '¡Ganaste ' + scratchWin + ' fichas! (x' + bestPayout + ')';
         playWin(); playCoin();
       } else {
         scratchMsg.textContent = 'Sin suerte esta vez';
         playLose();
       }
+      recordGameRound('scratch', scratchBetAmount, scratchWin);
       updateBalance();
       scratchPlaying = false;
       scratchPlayBtn.disabled = false;
@@ -4794,8 +5124,8 @@ hiloStartBtn.addEventListener('click', ()=>{
   const lowerCount = remaining.filter(c => rankValue(c.rank) < curVal).length;
   const pHigher = higherCount / remaining.length;
   const pLower = lowerCount / remaining.length;
-  hiloMultHigher = pHigher > 0 ? Math.round((0.85/pHigher)*100)/100 : 0;
-  hiloMultLower = pLower > 0 ? Math.round((0.85/pLower)*100)/100 : 0;
+  hiloMultHigher = pHigher > 0 ? Math.round((0.68/pHigher)*100)/100 : 0;
+  hiloMultLower = pLower > 0 ? Math.round((0.68/pLower)*100)/100 : 0;
 
   hiloMultRow.innerHTML =
     '<span>▲ Más alta: x' + (hiloMultHigher||'—') + '</span>' +
@@ -4820,7 +5150,9 @@ function resolveHilo(choice){
   const curVal = rankValue(hiloCurrent.rank);
   const nextVal = rankValue(next.rank);
 
+  let hiloWin = 0;
   if(nextVal === curVal){
+    hiloWin = hiloBetAmount;
     balance += hiloBetAmount;
     hiloMsg.textContent = 'Empate — se devuelve tu apuesta';
     playClick();
@@ -4828,15 +5160,16 @@ function resolveHilo(choice){
     const won = (choice === 'higher' && nextVal > curVal) || (choice === 'lower' && nextVal < curVal);
     const mult = choice === 'higher' ? hiloMultHigher : hiloMultLower;
     if(won && applyBetDifficulty(hiloBetAmount, true)){
-      const win = Math.round(hiloBetAmount * mult);
-      balance += win;
-      hiloMsg.textContent = '¡Acertaste! Ganaste ' + win + ' fichas';
+      hiloWin = Math.round(hiloBetAmount * mult);
+      balance += hiloWin;
+      hiloMsg.textContent = '¡Acertaste! Ganaste ' + hiloWin + ' fichas';
       playWin(); playCoin();
     } else {
       hiloMsg.textContent = 'No acertaste — perdiste tu apuesta';
       playLose();
     }
   }
+  recordGameRound('hilo', hiloBetAmount, hiloWin);
   updateBalance();
   hiloActive = false;
   hiloStartBtn.style.display = 'block';
@@ -4921,11 +5254,13 @@ sicboRollBtn.addEventListener('click', ()=>{
       let totalWin = 0;
       sicboSelected.forEach(bet=>{
         let win = 0;
-        if(bet.type === 'grande' && sum>=11 && sum<=17 && !isTriple) win = Math.round(sicboBetAmount*1.9);
-        else if(bet.type === 'chica' && sum>=4 && sum<=10 && !isTriple) win = Math.round(sicboBetAmount*1.9);
+        if(bet.type === 'grande' && sum>=11 && sum<=17 && !isTriple) win = Math.round(sicboBetAmount*1.6);
+        else if(bet.type === 'chica' && sum>=4 && sum<=10 && !isTriple) win = Math.round(sicboBetAmount*1.6);
         else if(bet.type === 'number'){
           const count = results.filter(r=>r===bet.value).length;
-          if(count>0) win = sicboBetAmount*(count+1);
+          if(count===1) win = Math.round(sicboBetAmount*1.6);
+          else if(count===2) win = Math.round(sicboBetAmount*2.4);
+          else if(count===3) win = Math.round(sicboBetAmount*3.2);
         }
         if(win > 0 && applyBetDifficulty(sicboBetAmount, true)) totalWin += win;
       });
@@ -4938,6 +5273,7 @@ sicboRollBtn.addEventListener('click', ()=>{
         sicboMsg.textContent = 'Salió ' + sum + ' — sin premio';
         playLose();
       }
+      recordGameRound('sicbo', sicboBetAmount * sicboSelected.length, totalWin);
       updateBalance();
       sicboRolling = false;
       sicboRollBtn.disabled = false;
@@ -4950,8 +5286,8 @@ sicboRollBtn.addEventListener('click', ()=>{
 // 32 gajos: mayoría no paga nada (más difícil), pero el premio grande es x20
 // 8 gajos grandes y legibles (en vez de 32 chiquitos que se pisaban entre sí)
 const FORTUNE_SEGMENTS = [
-  {mult:0,  weight:6}, {mult:1,  weight:2}, {mult:0, weight:6}, {mult:2,  weight:2},
-  {mult:0,  weight:6}, {mult:1,  weight:2}, {mult:0, weight:6}, {mult:20, weight:1}
+  {mult:0,  weight:7}, {mult:1,  weight:2}, {mult:0, weight:7}, {mult:2,  weight:1},
+  {mult:0,  weight:7}, {mult:1,  weight:2}, {mult:0, weight:7}, {mult:20, weight:1}
 ];
 let wheelBetAmount = 1;
 let wheelSpinning = false;
@@ -5041,8 +5377,10 @@ wheelSpinBtn.addEventListener('click', ()=>{
 
   setTimeout(()=>{
     const mult = FORTUNE_SEGMENTS[segIdx].mult;
+    let wheelActualWin = 0;
     if(mult > 0 && applyBetDifficulty(wheelBetAmount, true)){
       const win = Math.round(wheelBetAmount * mult);
+      wheelActualWin = win;
       if(win > wheelBetAmount){
         balance += win;
         wheelMsg.textContent = 'Cayó en x' + mult + ' — ¡Ganaste ' + (win-wheelBetAmount) + ' fichas!';
@@ -5060,6 +5398,7 @@ wheelSpinBtn.addEventListener('click', ()=>{
       wheelMsg.textContent = 'Cayó en x' + mult + ' — perdiste tu apuesta';
       playLose();
     }
+    recordGameRound('fortunewheel', wheelBetAmount, wheelActualWin);
     updateBalance();
     wheelSpinning = false;
     wheelSpinBtn.disabled = false;
