@@ -4367,14 +4367,19 @@ document.getElementById('minesBet').addEventListener('change', function(){
   this.value = v;
 });
 
+// Tabla de multiplicadores por casilla segura revelada, calculada matemáticamente
+// para que la casa mantenga siempre un 15% de ventaja pareja, sin importar en
+// qué momento se retire el jugador — y sin bajar nunca (antes el 3-minas
+// llegaba a bajar en vez de subir). Techo de x100 para evitar pozos gigantes.
+const MINES_MULT_TABLE = {
+  3:  [1.0,1.104,1.269,1.47,1.715,2.018,2.396,2.875,3.491,4.297,5.371,6.836,8.886,11.848,16.292,23.274,34.911,55.857,97.75,100,100,100],
+  5:  [1.062,1.342,1.715,2.219,2.913,3.884,5.271,7.298,10.339,15.038,22.558,35.09,57.021,97.75,100,100,100,100,100,100],
+  10: [1.417,2.429,4.297,7.877,15.038,30.077,63.496,100,100,100,100,100,100,100,100]
+};
 function minesNextMultiplier(){
-  const remainingTiles = MINES_TOTAL - minesRevealedSafe;
-  const remainingSafe = (MINES_TOTAL - minesCount) - minesRevealedSafe;
-  const stepMult = remainingTiles / remainingSafe;
-  // techo duro: ningún premio de Minas puede pasar de x100, sin importar
-  // cuántas minas haya o cuántas casillas se revelen — evita que una
-  // apuesta chica se convierta en un pozo gigantesco de un solo golpe.
-  return Math.min(minesMultiplier * stepMult * 0.84, 100);
+  const table = MINES_MULT_TABLE[minesCount] || MINES_MULT_TABLE[5];
+  const idx = Math.min(minesRevealedSafe, table.length - 1);
+  return table[idx];
 }
 
 minesPlayBtn.addEventListener('click', ()=>{
@@ -4443,7 +4448,7 @@ mineTiles.forEach(tile=>{
 
     if(minesRevealedSafe === MINES_TOTAL - minesCount){
       if(applyBetDifficulty(minesBetAmount, true)){
-        const win = Math.round(minesBetAmount * minesMultiplier);
+        const win = Math.ceil(minesBetAmount * minesMultiplier);
         balance += win;
         updateBalance();
         minesMsg.textContent = '¡Todas las casillas seguras! +' + win + ' fichas';
@@ -4462,7 +4467,7 @@ mineTiles.forEach(tile=>{
 minesCashoutBtn.addEventListener('click', ()=>{
   if(!minesActive || minesRevealedSafe === 0) return;
   if(applyBetDifficulty(minesBetAmount, true)){
-    const win = Math.round(minesBetAmount * minesMultiplier);
+    const win = Math.ceil(minesBetAmount * minesMultiplier);
     balance += win;
     updateBalance();
     minesMsg.textContent = 'Retiraste en x' + minesMultiplier.toFixed(2) + ' — +' + win + ' fichas';
