@@ -1721,6 +1721,7 @@
   .admin-user-info{ flex:1; min-width:0; }
   .admin-user-name{ font-size: 14px; color: var(--text); }
   .admin-user-email{ font-size: 11px; color: var(--text-dim); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .admin-user-balance{ font-size: 12px; color: var(--gold); font-weight:bold; margin-top:2px; }
   .role-badge{
     font-size: 10px;
     padding: 3px 10px;
@@ -2914,7 +2915,7 @@ async function renderAdminPanel(){
 
     const info = document.createElement('div');
     info.className = 'admin-user-info';
-    info.innerHTML = '<div class="admin-user-name">' + u.name + '</div><div class="admin-user-email">' + u.email + ' · ' + u.balance + ' fichas</div>';
+    info.innerHTML = '<div class="admin-user-name">' + u.name + '</div><div class="admin-user-email">' + u.email + '</div><div class="admin-user-balance">💰 ' + u.balance + ' fichas</div>';
 
     const badge = document.createElement('span');
     badge.className = 'role-badge ' + u.role;
