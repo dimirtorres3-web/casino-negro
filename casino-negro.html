@@ -2245,7 +2245,7 @@
         <button id="pokerDrawBtn" disabled>CAMBIAR</button>
       </div>
       <div class="poker-paytable">
-        Escalera real x250 · Escalera color x50 · Póker x25 · Full x9<br>
+        Escalera real x100 · Escalera color x50 · Póker x25 · Full x9<br>
         Color x6 · Escalera x4 · Trío x3 · Doble par x2 · Par de J o más x1
       </div>
     </div>
@@ -2329,8 +2329,8 @@
         <button class="premium-spin-btn" id="premiumSpinBtn">↻</button>
       </div>
       <div class="premium-paytable">
-        🃏🃏🃏🃏🃏 x3825 &nbsp;·&nbsp; 7️⃣7️⃣7️⃣7️⃣7️⃣ x723 &nbsp;·&nbsp; ⭐⭐⭐⭐⭐ x315<br>
-        🔔🔔🔔🔔🔔 x143 &nbsp;·&nbsp; 🍇🍇🍇🍇🍇 x71 &nbsp;·&nbsp; 🍋🍋🍋🍋🍋 x48 &nbsp;·&nbsp; 🍒🍒🍒🍒🍒 x28<br>
+        🃏🃏🃏🃏🃏 x400 &nbsp;·&nbsp; 7️⃣7️⃣7️⃣7️⃣7️⃣ x280 &nbsp;·&nbsp; ⭐⭐⭐⭐⭐ x160<br>
+        🔔🔔🔔🔔🔔 x85 &nbsp;·&nbsp; 🍇🍇🍇🍇🍇 x46 &nbsp;·&nbsp; 🍋🍋🍋🍋🍋 x32 &nbsp;·&nbsp; 🍒🍒🍒🍒🍒 x20<br>
         Pagan 3, 4 o 5 símbolos iguales seguidos desde el rodillo 1
       </div>
     </div>
@@ -2392,7 +2392,7 @@
       <button class="spin-btn" id="scratchPlayBtn">COMPRAR Y RASPAR</button>
       <div class="scratch-paytable">
         Ganás con 3 símbolos iguales en línea (fila, columna o diagonal)<br>
-        🍒x1 · 🍋x2 · 🍀x3 · 💎x6 · 🔮x14 · ⭐x38 · 👑x171 · 7️⃣x1280
+        🍒x1 · 🍋x2 · 🍀x3 · 💎x6 · 🔮x13 · ⭐x30 · 👑x70 · 7️⃣x150
       </div>
     </div>
   </section>
@@ -3614,7 +3614,7 @@ document.getElementById('soundToggleBtn').addEventListener('click', function(){
 
 // ---- SLOTS ----
 const symbols = ['♠️','🍒','🍋','🔔','💎','7️⃣']; // ♠️ = símbolo de relleno, no paga nada (como en una máquina real)
-const weights =  [16, 22, 16, 10, 5.5, 1.5]; // menor peso = menos probable
+const weights =  [10, 27, 19, 10, 5.5, 1.5]; // menor peso = menos probable
 function pickSymbol(){
   const total = weights.reduce((a,b)=>a+b,0);
   let r = Math.random()*total;
@@ -4371,7 +4371,10 @@ function minesNextMultiplier(){
   const remainingTiles = MINES_TOTAL - minesRevealedSafe;
   const remainingSafe = (MINES_TOTAL - minesCount) - minesRevealedSafe;
   const stepMult = remainingTiles / remainingSafe;
-  return minesMultiplier * stepMult * 0.84;
+  // techo duro: ningún premio de Minas puede pasar de x100, sin importar
+  // cuántas minas haya o cuántas casillas se revelen — evita que una
+  // apuesta chica se convierta en un pozo gigantesco de un solo golpe.
+  return Math.min(minesMultiplier * stepMult * 0.84, 100);
 }
 
 minesPlayBtn.addEventListener('click', ()=>{
@@ -4548,7 +4551,7 @@ function evaluatePokerHand(hand){
     if(uniqueVals.join(',') === '2,3,4,5,14') isStraight = true;
   }
 
-  if(isStraight && isFlush && uniqueVals[0] === 10) return { name: 'Escalera real', mult: 250 };
+  if(isStraight && isFlush && uniqueVals[0] === 10) return { name: 'Escalera real', mult: 100 };
   if(isStraight && isFlush) return { name: 'Escalera de color', mult: 50 };
   if(countVals[0] === 4) return { name: 'Póker', mult: 25 };
   if(countVals[0] === 3 && countVals[1] === 2) return { name: 'Full', mult: 9 };
@@ -4869,7 +4872,7 @@ const premiumWeights =  [33, 26, 19, 12, 6, 3, 1];
 const premiumEmoji = { cereza:'🍒', limon:'🍋', uva:'🍇', campana:'🔔', estrella:'⭐', siete:'7️⃣', joker:'🃏' };
 const premiumPayout3 = { cereza:4, limon:8, uva:11, campana:22, estrella:44, siete:102, joker:408 };
 const premiumPayout4 = { cereza:12, limon:18, uva:26, campana:49, estrella:100, siete:230, joker:1190 };
-const premiumPayout5 = { cereza:28, limon:48, uva:71, campana:143, estrella:315, siete:723, joker:3825 };
+const premiumPayout5 = { cereza:20, limon:32, uva:46, campana:85, estrella:160, siete:280, joker:400 };
 
 let premiumBetAmount = 1;
 const PREMIUM_REELS = 5, PREMIUM_ROWS = 3;
@@ -5151,9 +5154,9 @@ function finishBingo(allNumbers, rows, marked){
 
 // ==================== KENO ====================
 const KENO_PAYTABLES = {
-  4:  {3:7, 4:147},
-  8:  {5:20, 6:100, 7:600, 8:4500},
-  10: {6:25, 7:140, 8:1000, 9:6000, 10:30000}
+  4:  {3:6, 4:120},
+  8:  {5:15, 6:70, 7:300, 8:1200},
+  10: {6:18, 7:80, 8:350, 9:800, 10:1500}
 };
 let kenoPicksCount = 4;
 let kenoBetAmount = 1;
@@ -5267,7 +5270,7 @@ kenoPlayBtn.addEventListener('click', ()=>{
 const SCRATCH_SYMBOLS = ['cereza','limon','trebol','diamante','perla','estrella','diamante2','siete'];
 const SCRATCH_WEIGHTS = [26, 20, 17, 14, 11, 7, 4, 1];
 const SCRATCH_EMOJI = { cereza:'🍒', limon:'🍋', trebol:'🍀', diamante:'💎', perla:'🔮', estrella:'⭐', diamante2:'👑', siete:'7️⃣' };
-const SCRATCH_PAYOUT = { cereza:1, limon:2, trebol:3, diamante:6, perla:14, estrella:38, diamante2:171, siete:1280 };
+const SCRATCH_PAYOUT = { cereza:1, limon:2, trebol:3, diamante:6, perla:13, estrella:30, diamante2:70, siete:150 };
 const SCRATCH_LINES = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
 let scratchBetAmount = 1;
 let scratchPlaying = false;
