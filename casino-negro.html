@@ -1985,8 +1985,8 @@
       </div>
       <button class="spin-btn" id="spinBtn">GIRAR</button>
       <div class="paytable">
-        7️⃣ 7️⃣ 7️⃣ = x45 &nbsp;·&nbsp; 💎 💎 💎 = x22 &nbsp;·&nbsp; 🔔 🔔 🔔 = x12<br>
-        🍋 🍋 🍋 = x8 &nbsp;·&nbsp; 🍒 🍒 🍒 = x5 &nbsp;·&nbsp; dos 🍒 = x1.5
+        7️⃣ 7️⃣ 7️⃣ = x60 &nbsp;·&nbsp; 💎 💎 💎 = x18 &nbsp;·&nbsp; 🔔 🔔 🔔 = x9<br>
+        🍋 🍋 🍋 = x6 &nbsp;·&nbsp; 🍒 🍒 🍒 = x4 &nbsp;·&nbsp; dos 🍒 = x1.2
       </div>
     </div>
   </section>
@@ -2217,8 +2217,8 @@
         <button class="premium-spin-btn" id="premiumSpinBtn">↻</button>
       </div>
       <div class="premium-paytable">
-        🃏🃏🃏🃏🃏 x2400 &nbsp;·&nbsp; 7️⃣7️⃣7️⃣7️⃣7️⃣ x1000 &nbsp;·&nbsp; ⭐⭐⭐⭐⭐ x500<br>
-        🔔🔔🔔🔔🔔 x240 &nbsp;·&nbsp; 🍇🍇🍇🍇🍇 x120 &nbsp;·&nbsp; 🍋🍋🍋🍋🍋 x80 &nbsp;·&nbsp; 🍒🍒🍒🍒🍒 x50<br>
+        🃏🃏🃏🃏🃏 x4500 &nbsp;·&nbsp; 7️⃣7️⃣7️⃣7️⃣7️⃣ x850 &nbsp;·&nbsp; ⭐⭐⭐⭐⭐ x370<br>
+        🔔🔔🔔🔔🔔 x168 &nbsp;·&nbsp; 🍇🍇🍇🍇🍇 x84 &nbsp;·&nbsp; 🍋🍋🍋🍋🍋 x56 &nbsp;·&nbsp; 🍒🍒🍒🍒🍒 x33<br>
         Pagan 3, 4 o 5 símbolos iguales seguidos desde el rodillo 1
       </div>
     </div>
@@ -2280,7 +2280,7 @@
       <button class="spin-btn" id="scratchPlayBtn">COMPRAR Y RASPAR</button>
       <div class="scratch-paytable">
         Ganás con 3 símbolos iguales en línea (fila, columna o diagonal)<br>
-        🍒x1 · 🍋x2 · 🍀x4 · 💎x9 · ⭐x30 · 7️⃣x150
+        🍒x1 · 🍋x2 · 🍀x3 · 💎x7 · 🔮x16 · ⭐x45 · 👑x200 · 7️⃣x1500
       </div>
     </div>
   </section>
@@ -2316,8 +2316,8 @@
       </div>
       <div class="sicbo-msg" id="sicboMsg">Elegí una o más apuestas</div>
       <div class="sicbo-bet-options" id="sicboBetOptions">
-        <div class="bet-option" data-sicbo="grande">Grande (11-17)<span class="payout">x2</span></div>
-        <div class="bet-option" data-sicbo="chica">Chica (4-10)<span class="payout">x2</span></div>
+        <div class="bet-option" data-sicbo="grande">Grande (11-17)<span class="payout">x1.9</span></div>
+        <div class="bet-option" data-sicbo="chica">Chica (4-10)<span class="payout">x1.9</span></div>
       </div>
       <div style="text-align:center; font-size:11px; color:var(--text-dim); margin-bottom:8px;">O elegí un número (paga según cuántos dados lo muestren):</div>
       <div class="sicbo-numbers" id="sicboNumbers"></div>
@@ -2454,9 +2454,9 @@ function playBounce(){ playTone(500 + Math.random()*400, 0.04, 'sine', 0.07, 0);
 // la casa "cancele" una victoria que ya salió. Aplica a todos los juegos.
 // ======================================================================
 function betDifficultyPenalty(betAmount){
-  if(betAmount >= 200) return 0.35; // apuestas de 200+ : 35% de perder igual
-  if(betAmount >= 100) return 0.15; // apuestas de 100 a 199: 15% de perder igual
-  return 0; // apuestas menores a 100: sin penalidad extra
+  if(betAmount >= 200) return 0.55; // apuestas de 200+ : 55% de perder igual
+  if(betAmount >= 50) return 0.35;  // apuestas de 50 a 199: 35% de perder igual
+  return 0.18; // cualquier apuesta, hasta la más chica: 18% de perder igual
 }
 function applyBetDifficulty(betAmount, wouldWin){
   if(!wouldWin) return false;
@@ -3053,7 +3053,7 @@ document.getElementById('soundToggleBtn').addEventListener('click', function(){
 
 // ---- SLOTS ----
 const symbols = ['🍒','🍋','🔔','💎','7️⃣'];
-const weights =  [38, 26, 18, 12, 6]; // menor peso = menos probable
+const weights =  [40, 27, 19, 10, 4]; // menor peso = menos probable
 function pickSymbol(){
   const total = weights.reduce((a,b)=>a+b,0);
   let r = Math.random()*total;
@@ -3106,13 +3106,13 @@ function evaluateSlot(results){
   let mult = 0;
   const [a,b,c] = results;
   if(a===b && b===c){
-    if(a==='7️⃣') mult = 45;
-    else if(a==='💎') mult = 22;
-    else if(a==='🔔') mult = 12;
-    else if(a==='🍋') mult = 8;
-    else if(a==='🍒') mult = 5;
+    if(a==='7️⃣') mult = 60;
+    else if(a==='💎') mult = 18;
+    else if(a==='🔔') mult = 9;
+    else if(a==='🍋') mult = 6;
+    else if(a==='🍒') mult = 4;
   } else if(a==='🍒' && b==='🍒' || b==='🍒' && c==='🍒' || a==='🍒' && c==='🍒'){
-    mult = 1.5;
+    mult = 1.2;
   }
 
   if(mult > 0 && applyBetDifficulty(slotBet, true)){
@@ -3577,7 +3577,7 @@ const aviatorCashoutBtn = document.getElementById('aviatorCashoutBtn');
 bindBetInput('avBetMinus', 'avBetPlus', 'aviatorBet', ()=>aviatorBetAmount, v=>aviatorBetAmount=v);
 
 function generateCrashPoint(bet){
-  const houseEdge = 0.04 + betDifficultyPenalty(bet || 0); // apuestas altas: la casa se protege más, el avión vuela menos
+  const houseEdge = 0.08 + betDifficultyPenalty(bet || 0); // apuestas altas: la casa se protege más, el avión vuela menos
   const r = Math.random();
   if(r < houseEdge) return 1.00;
   let crash = (1 / (1 - r)) * (1 - houseEdge);
@@ -4107,15 +4107,15 @@ baccDealBtn.addEventListener('click', ()=>{
   let win = 0;
   if(winner === 'tie'){
     if(selectedBaccBet === 'tie'){
-      win = baccBetAmount * 8;
+      win = baccBetAmount * 7;
     } else {
       win = baccBetAmount;
     }
   } else if(winner === selectedBaccBet){
     if(winner === 'banker'){
-      win = Math.round(baccBetAmount * 1.95);
+      win = Math.round(baccBetAmount * 1.9);
     } else {
-      win = baccBetAmount * 2;
+      win = Math.round(baccBetAmount * 1.92);
     }
   }
 
@@ -4138,7 +4138,7 @@ baccDealBtn.addEventListener('click', ()=>{
 
 // ---- PLINKO ----
 const PLINKO_ROWS = 8;
-const plinkoMultipliers = [5.6, 2.1, 1.1, 1, 0.5, 1, 1.1, 2.1, 5.6];
+const plinkoMultipliers = [15, 3, 1, 0.5, 0.3, 0.5, 1, 3, 15];
 let plinkoBetAmount = 1;
 let plinkoDropping = false;
 
@@ -4254,11 +4254,11 @@ plinkoDropBtn.addEventListener('click', ()=>{
 
 // ---- TRAGAMONEDAS PREMIUM (5 rodillos x 3 filas) ----
 const premiumSymbols = ['cereza','limon','uva','campana','estrella','siete','joker'];
-const premiumWeights =  [30, 24, 18, 14, 8, 4, 2];
+const premiumWeights =  [33, 26, 19, 12, 6, 3, 1];
 const premiumEmoji = { cereza:'🍒', limon:'🍋', uva:'🍇', campana:'🔔', estrella:'⭐', siete:'7️⃣', joker:'🃏' };
-const premiumPayout3 = { cereza:8, limon:12, uva:16, campana:30, estrella:60, siete:120, joker:300 };
-const premiumPayout4 = { cereza:20, limon:30, uva:40, campana:80, estrella:160, siete:300, joker:800 };
-const premiumPayout5 = { cereza:50, limon:80, uva:120, campana:240, estrella:500, siete:1000, joker:2400 };
+const premiumPayout3 = { cereza:5, limon:9, uva:13, campana:26, estrella:52, siete:120, joker:480 };
+const premiumPayout4 = { cereza:14, limon:21, uva:30, campana:58, estrella:118, siete:270, joker:1400 };
+const premiumPayout5 = { cereza:33, limon:56, uva:84, campana:168, estrella:370, siete:850, joker:4500 };
 
 let premiumBetAmount = 1;
 const PREMIUM_REELS = 5, PREMIUM_ROWS = 3;
@@ -4536,9 +4536,9 @@ function finishBingo(allNumbers, rows, marked){
 
 // ==================== KENO ====================
 const KENO_PAYTABLES = {
-  4:  {2:1, 3:9, 4:95},
-  8:  {3:1, 4:3, 5:12, 6:55, 7:300, 8:2200},
-  10: {4:1, 5:4, 6:24, 7:95, 8:600, 9:3200, 10:16000}
+  4:  {3:8, 4:170},
+  8:  {5:20, 6:100, 7:600, 8:4500},
+  10: {6:25, 7:140, 8:1000, 9:6000, 10:30000}
 };
 let kenoPicksCount = 4;
 let kenoBetAmount = 1;
@@ -4647,10 +4647,10 @@ kenoPlayBtn.addEventListener('click', ()=>{
 });
 
 // ==================== RASCA Y GANA ====================
-const SCRATCH_SYMBOLS = ['cereza','limon','trebol','diamante','estrella','siete'];
-const SCRATCH_WEIGHTS = [32, 25, 18, 13, 9, 3];
-const SCRATCH_EMOJI = { cereza:'🍒', limon:'🍋', trebol:'🍀', diamante:'💎', estrella:'⭐', siete:'7️⃣' };
-const SCRATCH_PAYOUT = { cereza:1, limon:2, trebol:4, diamante:9, estrella:30, siete:150 };
+const SCRATCH_SYMBOLS = ['cereza','limon','trebol','diamante','perla','estrella','diamante2','siete'];
+const SCRATCH_WEIGHTS = [26, 20, 17, 14, 11, 7, 4, 1];
+const SCRATCH_EMOJI = { cereza:'🍒', limon:'🍋', trebol:'🍀', diamante:'💎', perla:'🔮', estrella:'⭐', diamante2:'👑', siete:'7️⃣' };
+const SCRATCH_PAYOUT = { cereza:1, limon:2, trebol:3, diamante:7, perla:16, estrella:45, diamante2:200, siete:1500 };
 const SCRATCH_LINES = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
 let scratchBetAmount = 1;
 let scratchPlaying = false;
@@ -4780,8 +4780,8 @@ hiloStartBtn.addEventListener('click', ()=>{
   const lowerCount = remaining.filter(c => rankValue(c.rank) < curVal).length;
   const pHigher = higherCount / remaining.length;
   const pLower = lowerCount / remaining.length;
-  hiloMultHigher = pHigher > 0 ? Math.round((0.95/pHigher)*100)/100 : 0;
-  hiloMultLower = pLower > 0 ? Math.round((0.95/pLower)*100)/100 : 0;
+  hiloMultHigher = pHigher > 0 ? Math.round((0.85/pHigher)*100)/100 : 0;
+  hiloMultLower = pLower > 0 ? Math.round((0.85/pLower)*100)/100 : 0;
 
   hiloMultRow.innerHTML =
     '<span>▲ Más alta: x' + (hiloMultHigher||'—') + '</span>' +
@@ -4907,8 +4907,8 @@ sicboRollBtn.addEventListener('click', ()=>{
       let totalWin = 0;
       sicboSelected.forEach(bet=>{
         let win = 0;
-        if(bet.type === 'grande' && sum>=11 && sum<=17 && !isTriple) win = sicboBetAmount*2;
-        else if(bet.type === 'chica' && sum>=4 && sum<=10 && !isTriple) win = sicboBetAmount*2;
+        if(bet.type === 'grande' && sum>=11 && sum<=17 && !isTriple) win = Math.round(sicboBetAmount*1.9);
+        else if(bet.type === 'chica' && sum>=4 && sum<=10 && !isTriple) win = Math.round(sicboBetAmount*1.9);
         else if(bet.type === 'number'){
           const count = results.filter(r=>r===bet.value).length;
           if(count>0) win = sicboBetAmount*(count+1);
@@ -4933,12 +4933,9 @@ sicboRollBtn.addEventListener('click', ()=>{
 
 // ==================== RUEDA DE LA SUERTE ====================
 // 16 gajos parejos y bien visibles (nada de porciones microscópicas que no se ven)
-const FORTUNE_SEGMENTS = [
-  {mult:0,   weight:1}, {mult:1, weight:1}, {mult:0, weight:1}, {mult:1, weight:1},
-  {mult:0,   weight:1}, {mult:1.5, weight:1}, {mult:1, weight:1}, {mult:0, weight:1},
-  {mult:2,   weight:1}, {mult:1, weight:1}, {mult:0, weight:1}, {mult:1, weight:1},
-  {mult:0,   weight:1}, {mult:1, weight:1}, {mult:5, weight:1}, {mult:0, weight:1}
-];
+// 32 gajos: mayoría no paga nada (más difícil), pero el premio grande es x20
+const FORTUNE_SEGMENTS = [1,0,0,0,2,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,1,0,0,0,0,0,0,20,0,0,2,0]
+  .map(mult => ({mult, weight:1}));
 let wheelBetAmount = 1;
 let wheelSpinning = false;
 let wheelRotationTotal = 0;
