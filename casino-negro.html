@@ -3256,13 +3256,51 @@ async function renderStats(){
   }
   html += '</div>';
 
-  // desglose por juego
-  html += '<div class="stats-chart-wrap"><div class="stats-chart-title">Ganancia por juego</div>';
+  // gráfico circular (donut): de un vistazo, qué parte de todo viene de cada juego
+  html += '<div class="stats-chart-wrap"><div class="stats-chart-title">Vista general por juego</div>';
   const gameProfits = data.byGame.map(g => ({
     game: g.game,
     label: GAME_LABELS[g.game] || g.game,
     profit: (parseInt(g.total_bet,10)||0) - (parseInt(g.total_win,10)||0)
   }));
+  const donutColors = ['#ffd23f','#ff3c8c','#4dffb0','#7a3fd6','#5fd3ff','#ff8a3d','#c9a8ff','#ff5f5f','#8ae05f','#5fa8ff','#e0b85f','#c85fd6','#5fe0c8','#ff9ecb','#a8ff5f','#5f8aff'];
+  const totalAbs = gameProfits.reduce((a,g)=>a+Math.abs(g.profit),0) || 1;
+  const cx=110, cy=110, rOuter=100, rInner=58;
+  let acc = 0;
+  let donutSvg = '<svg width="220" height="220" viewBox="0 0 220 220" style="display:block; margin:0 auto;">';
+  gameProfits.forEach((g,i)=>{
+    const frac = Math.abs(g.profit)/totalAbs;
+    if(frac <= 0) return;
+    const a0 = acc*2*Math.PI - Math.PI/2;
+    acc += frac;
+    const a1 = acc*2*Math.PI - Math.PI/2;
+    const largeArc = (a1-a0) > Math.PI ? 1 : 0;
+    const x0o = cx + rOuter*Math.cos(a0), y0o = cy + rOuter*Math.sin(a0);
+    const x1o = cx + rOuter*Math.cos(a1), y1o = cy + rOuter*Math.sin(a1);
+    const x0i = cx + rInner*Math.cos(a1), y0i = cy + rInner*Math.sin(a1);
+    const x1i = cx + rInner*Math.cos(a0), y1i = cy + rInner*Math.sin(a0);
+    donutSvg += '<path d="M' + x0o.toFixed(1) + ',' + y0o.toFixed(1) +
+      ' A' + rOuter + ',' + rOuter + ' 0 ' + largeArc + ',1 ' + x1o.toFixed(1) + ',' + y1o.toFixed(1) +
+      ' L' + x0i.toFixed(1) + ',' + y0i.toFixed(1) +
+      ' A' + rInner + ',' + rInner + ' 0 ' + largeArc + ',0 ' + x1i.toFixed(1) + ',' + y1i.toFixed(1) +
+      ' Z" fill="' + donutColors[i % donutColors.length] + '" stroke="#05000c" stroke-width="1.5"></path>';
+  });
+  donutSvg += '<text x="' + cx + '" y="' + (cy-6) + '" font-size="11" fill="var(--text-dim)" text-anchor="middle">GANANCIA</text>';
+  donutSvg += '<text x="' + cx + '" y="' + (cy+16) + '" font-size="15" font-weight="bold" fill="var(--gold)" text-anchor="middle">Gs. ' + fmtGuaranies(houseProfit) + '</text>';
+  donutSvg += '</svg>';
+  html += donutSvg;
+
+  html += '<div style="display:flex; flex-wrap:wrap; gap:8px 14px; justify-content:center; margin-top:14px;">';
+  gameProfits.forEach((g,i)=>{
+    if(Math.abs(g.profit) <= 0) return;
+    html += '<div style="display:flex; align-items:center; gap:5px; font-size:11px; color:var(--text-dim);">' +
+      '<span style="display:inline-block; width:10px; height:10px; border-radius:50%; background:' + donutColors[i % donutColors.length] + ';"></span>' +
+      g.label + '</div>';
+  });
+  html += '</div></div>';
+
+  // desglose por juego
+  html += '<div class="stats-chart-wrap"><div class="stats-chart-title">Ganancia por juego</div>';
   const maxGameAbs = Math.max(1, ...gameProfits.map(g=>Math.abs(g.profit)));
   gameProfits.forEach(g=>{
     const pct = Math.abs(g.profit)/maxGameAbs*100;
