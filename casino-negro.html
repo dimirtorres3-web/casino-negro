@@ -2038,6 +2038,19 @@
     <div id="ledgerList"></div>
   </div>
 
+  <!-- ============ PANTALLA: HISTORIAL DE UN JUGADOR ============ -->
+  <div id="screenPlayerHistory" class="screen">
+    <div class="topbar-inline">
+      <button class="back-btn" id="playerHistoryBackBtn">← Volver</button>
+      <div class="topbar-balance">
+        <div class="chip-icon"></div>
+        <span class="balance-value">1000</span>
+      </div>
+    </div>
+    <div class="game-title-label" id="playerHistoryTitle">Historial del jugador</div>
+    <div id="playerHistoryContent">Cargando...</div>
+  </div>
+
   <!-- ============ PANTALLA: GANANCIA Y PÉRDIDA ============ -->
   <div id="screenStats" class="screen">
     <div class="topbar-inline">
@@ -2872,6 +2885,7 @@ document.getElementById('logoutBtn').addEventListener('click', function(){
   document.getElementById('screenAdmin').classList.remove('active');
   document.getElementById('screenLedger').classList.remove('active');
   document.getElementById('screenStats').classList.remove('active');
+  document.getElementById('screenPlayerHistory').classList.remove('active');
   document.getElementById('screenAuth').classList.add('active');
   document.getElementById('loginEmail').value = '';
   document.getElementById('loginPassword').value = '';
@@ -2927,6 +2941,15 @@ async function renderAdminPanel(){
     badge.textContent = roleLabel(u.role);
 
     row.appendChild(info);
+
+    // ver el historial de jugadas y cargas/pagos de este jugador puntual —
+    // disponible para admin y súper admin, sirve para confirmar reclamos
+    // como "ayer tenía tantas fichas y hoy tengo menos"
+    const historyBtn = document.createElement('button');
+    historyBtn.className = 'admin-role-btn';
+    historyBtn.textContent = '📜 Historial';
+    historyBtn.addEventListener('click', ()=> openPlayerHistory(u.email, u.name));
+    row.appendChild(historyBtn);
 
     // solo el súper admin puede ascender/descender a otros, y nunca sobre el súper admin original
     if(currentUser.role === 'superadmin' && u.email !== SUPERADMIN_EMAIL){
@@ -3109,6 +3132,72 @@ function buildDonutChartHTML(items, centerTitle, centerValueText){
   legend += '</div>';
   return svg + legend;
 }
+
+async function openPlayerHistory(playerEmail, playerName){
+  document.getElementById('screenAdmin').classList.remove('active');
+  document.getElementById('screenPlayerHistory').classList.add('active');
+  document.getElementById('playerHistoryTitle').textContent = 'Historial de ' + playerName;
+  const el = document.getElementById('playerHistoryContent');
+  el.innerHTML = 'Cargando...';
+
+  let rounds = [], adjustments = [];
+  try{
+    const res = await fetch('/api/admin/player-history?token=' + encodeURIComponent(getSessionToken() || '') + '&playerEmail=' + encodeURIComponent(playerEmail));
+    const data = await res.json();
+    if(!res.ok) throw new Error(data.error || 'Error');
+    rounds = data.rounds || [];
+    adjustments = data.adjustments || [];
+  }catch(err){
+    el.innerHTML = 'No se pudo cargar el historial (' + (err.message || 'error') + ')';
+    return;
+  }
+
+  if(rounds.length === 0 && adjustments.length === 0){
+    el.innerHTML = '<div class="recharge-empty">Este jugador todavía no tiene ninguna jugada ni carga/pago registrado</div>';
+    return;
+  }
+
+  // juntar todo en una sola línea de tiempo, ordenada de más nuevo a más viejo
+  const events = [];
+  rounds.forEach(r=>{
+    const net = r.win_amount - r.bet_amount;
+    events.push({
+      created_at: r.created_at,
+      html: '<div class="ledger-row"><div class="ledger-row-info">' + fmtDate(r.created_at) + '<br>🎮 ' + (GAME_LABELS[r.game] || r.game) + ' — apostó ' + fmtGuaranies(r.bet_amount) + ', ' + (r.win_amount>0 ? 'ganó ' + fmtGuaranies(r.win_amount) : 'no ganó nada') + '</div>' +
+        '<div class="ledger-row-amount ' + (net>=0?'pos':'neg') + '">' + (net>=0?'+':'') + fmtGuaranies(net) + '</div></div>'
+    });
+  });
+  adjustments.forEach(a=>{
+    events.push({
+      created_at: a.created_at,
+      html: '<div class="ledger-row"><div class="ledger-row-info">' + fmtDate(a.created_at) + '<br>👤 ' + a.admin_name + ' le ' + (a.amount>0?'cargó':'quitó') + ' fichas</div>' +
+        '<div class="ledger-row-amount ' + (a.amount>=0?'pos':'neg') + '">' + (a.amount>=0?'+':'') + fmtGuaranies(a.amount) + '</div></div>'
+    });
+  });
+  events.sort((a,b)=> new Date(b.created_at) - new Date(a.created_at));
+
+  const totalApostado = rounds.reduce((s,r)=>s+r.bet_amount,0);
+  const totalGanadoJugando = rounds.reduce((s,r)=>s+r.win_amount,0);
+  const totalCargasAdmin = adjustments.filter(a=>a.amount>0).reduce((s,a)=>s+a.amount,0);
+  const totalPagosAdmin = adjustments.filter(a=>a.amount<0).reduce((s,a)=>s+Math.abs(a.amount),0);
+
+  let html = '<div class="stats-summary-row" style="flex-wrap:wrap;">' +
+    '<div class="stats-summary-box"><div class="lbl">APOSTÓ EN TOTAL</div><div class="val">Gs. ' + fmtGuaranies(totalApostado) + '</div></div>' +
+    '<div class="stats-summary-box"><div class="lbl">GANÓ JUGANDO</div><div class="val" style="color:var(--green);">Gs. ' + fmtGuaranies(totalGanadoJugando) + '</div></div>' +
+  '</div><div class="stats-summary-row" style="flex-wrap:wrap; margin-top:8px;">' +
+    '<div class="stats-summary-box"><div class="lbl">LE CARGARON</div><div class="val" style="color:var(--green);">Gs. ' + fmtGuaranies(totalCargasAdmin) + '</div></div>' +
+    '<div class="stats-summary-box"><div class="lbl">LE PAGARON (RETIRÓ)</div><div class="val" style="color:var(--red);">Gs. ' + fmtGuaranies(totalPagosAdmin) + '</div></div>' +
+  '</div>';
+  html += '<div class="game-title-label" style="font-size:12px; margin-top:16px;">Línea de tiempo (más nuevo primero)</div>';
+  events.forEach(e=> html += e.html);
+
+  el.innerHTML = html;
+}
+
+document.getElementById('playerHistoryBackBtn').addEventListener('click', function(){
+  document.getElementById('screenPlayerHistory').classList.remove('active');
+  document.getElementById('screenAdmin').classList.add('active');
+});
 
 async function renderLedger(){
   const summaryEl = document.getElementById('ledgerSummary');

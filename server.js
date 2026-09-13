@@ -427,6 +427,37 @@ app.post('/api/game-round', async (req, res) => {
 });
 
 // ---- ESTADÍSTICAS DE GANANCIA Y PÉRDIDA (solo súper admin) ----
+// ---- HISTORIAL DE UN JUGADOR PUNTUAL (admin o súper admin) ----
+// Junta sus jugadas (apuestas/pagos de juego) y las cargas/pagos que le
+// hicieron los administradores, todo ordenado por fecha — para poder
+// confirmar exactamente qué pasó con las fichas de alguien puntual.
+app.get('/api/admin/player-history', async (req, res) => {
+  try{
+    const requester = await getAuthenticatedUser(req.query.token);
+    if(!requester || !['admin', 'superadmin'].includes(requester.role)){
+      return res.status(403).json({ error: 'No autorizado' });
+    }
+    const playerEmail = (req.query.playerEmail || '').trim().toLowerCase();
+    if(!playerEmail) return res.status(400).json({ error: 'Falta indicar el jugador' });
+
+    const rounds = await pool.query(
+      `SELECT game, bet_amount, win_amount, created_at FROM game_rounds
+       WHERE player_email = $1 ORDER BY created_at DESC LIMIT 200`,
+      [playerEmail]
+    );
+    const adjustments = await pool.query(
+      `SELECT admin_name, amount, created_at FROM balance_adjustments
+       WHERE target_email = $1 ORDER BY created_at DESC LIMIT 200`,
+      [playerEmail]
+    );
+
+    res.json({ ok: true, rounds: rounds.rows, adjustments: adjustments.rows });
+  }catch(err){
+    console.error(err);
+    res.status(500).json({ error: 'Error del servidor' });
+  }
+});
+
 app.get('/api/admin/stats', async (req, res) => {
   try{
     const requester = await getAuthenticatedUser(req.query.token);
