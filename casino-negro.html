@@ -1412,7 +1412,8 @@
     margin-bottom: 13px;
   }
   .fortune-wheel-outer{
-    width: 240px; height: 240px;
+    width: 320px; height: 320px;
+    max-width: 90vw; max-height: 90vw;
     position: relative;
     margin-bottom: 10px;
   }
@@ -4775,6 +4776,14 @@ hiloStartBtn.addEventListener('click', ()=>{
 
   hiloDeck = freshDeck();
   hiloCurrent = hiloDeck.pop();
+  // la carta inicial nunca es un 2 ni un As: así siempre hay incertidumbre
+  // real de los dos lados, nunca un botón "obvio" que el jugador ya sepa
+  // que va a ganar sí o sí.
+  while(rankValue(hiloCurrent.rank) === 2 || rankValue(hiloCurrent.rank) === 14){
+    hiloDeck.unshift(hiloCurrent);
+    hiloDeck = hiloDeck.sort(()=> Math.random()-0.5);
+    hiloCurrent = hiloDeck.pop();
+  }
   paintCardInto(hiloCurrentCardEl, hiloCurrent, false);
   paintCardInto(hiloNextCardEl, null, true);
   playCardFlip();
@@ -4939,8 +4948,11 @@ sicboRollBtn.addEventListener('click', ()=>{
 // ==================== RUEDA DE LA SUERTE ====================
 // 16 gajos parejos y bien visibles (nada de porciones microscópicas que no se ven)
 // 32 gajos: mayoría no paga nada (más difícil), pero el premio grande es x20
-const FORTUNE_SEGMENTS = [1,0,0,0,2,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,1,0,0,0,0,0,0,20,0,0,2,0]
-  .map(mult => ({mult, weight:1}));
+// 8 gajos grandes y legibles (en vez de 32 chiquitos que se pisaban entre sí)
+const FORTUNE_SEGMENTS = [
+  {mult:0,  weight:6}, {mult:1,  weight:2}, {mult:0, weight:6}, {mult:2,  weight:2},
+  {mult:0,  weight:6}, {mult:1,  weight:2}, {mult:0, weight:6}, {mult:20, weight:1}
+];
 let wheelBetAmount = 1;
 let wheelSpinning = false;
 let wheelRotationTotal = 0;
@@ -4983,7 +4995,7 @@ const fortuneAngles = FORTUNE_SEGMENTS.map(s=>{
     text.setAttribute('x', lx.toFixed(2));
     text.setAttribute('y', ly.toFixed(2));
     text.setAttribute('fill', '#f5e8b8');
-    text.setAttribute('font-size', '13');
+    text.setAttribute('font-size', '20');
     text.setAttribute('font-family', 'Georgia, serif');
     text.setAttribute('font-weight', 'bold');
     text.setAttribute('text-anchor', 'middle');
