@@ -2459,10 +2459,13 @@ function betDifficultyPenalty(betAmount){
   return 0.18; // cualquier apuesta, hasta la más chica: 18% de perder igual
 }
 function applyBetDifficulty(betAmount, wouldWin){
-  if(!wouldWin) return false;
-  const penalty = betDifficultyPenalty(betAmount);
-  if(penalty > 0 && Math.random() < penalty) return false;
-  return true;
+  // Si el resultado dice que corresponde pagar, se paga siempre — sin
+  // excepción, en ningún juego. Ya hubo varios casos (ruleta, sic bo) donde
+  // esto cancelaba una victoria real y generaba reportes de "bug". La
+  // dificultad de la casa vive en la matemática de cada juego (los pesos y
+  // pagos de cada símbolo/número), no en un sistema que anule un premio ya
+  // ganado.
+  return wouldWin;
 }
 
 // Conecta un campo de apuesta editable con sus botones +/-: el jugador puede
