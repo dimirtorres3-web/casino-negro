@@ -3262,9 +3262,11 @@ spinRouletteBtn.addEventListener('click', ()=>{
         win = rouletteBet * 2;
       }
 
-      // si acertaste el número exacto, cobra siempre — la dificultad por apuesta
-      // alta solo se aplica a las apuestas de color/par/impar, no al número pleno
-      if(win > 0 && (isExactNumberBet || applyBetDifficulty(rouletteBet, true))){
+      // en la Ruleta ninguna apuesta se cancela por dificultad — ni número, ni
+      // color, ni par/impar. Si corresponde pagar según dónde cayó la bolita,
+      // se paga siempre. La única ventaja de la casa acá es el 0, como en una
+      // ruleta real — nada de sistemas ocultos que cancelen una victoria real.
+      if(win > 0){
         totalWin += win;
         winCount++;
       }
