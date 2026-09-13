@@ -3177,17 +3177,84 @@ async function renderLedger(){
       '</div>';
     summaryEl.appendChild(overallBox.firstChild);
 
-    // gráfico circular: cuánto movimiento (cargas + pagos) generó cada administrador
+    // gráfico circular: cuánto movimiento (cargas + pagos) generó cada administrador,
+    // con cargado/pagado en el centro y la lista de nombres al costado con su propio número
     if(adminsConMovimiento.length > 1){
       const donutWrap = document.createElement('div');
       donutWrap.className = 'stats-chart-wrap';
       donutWrap.style.marginBottom = '16px';
+
       const items = adminsConMovimiento.map(email => ({
         label: byAdmin[email].name,
         value: byAdmin[email].totalCargado + byAdmin[email].totalPagado
       }));
-      donutWrap.innerHTML = '<div class="stats-chart-title">Movimiento por administrador</div>' +
-        buildDonutChartHTML(items, 'MOVIMIENTO', 'Gs. ' + fmtGuaranies(totalCargadoAll + totalPagadoAll));
+      const total = items.reduce((a,it)=>a+it.value,0) || 1;
+      const cx=110, cy=110, rOuter=100, rInner=58;
+      let acc = 0;
+      let svg = '<svg width="220" height="220" viewBox="0 0 220 220" style="flex-shrink:0;">';
+      items.forEach((it,i)=>{
+        const frac = it.value/total;
+        if(frac <= 0) return;
+        const a0 = acc*2*Math.PI - Math.PI/2;
+        acc += frac;
+        const a1 = acc*2*Math.PI - Math.PI/2;
+        const largeArc = (a1-a0) > Math.PI ? 1 : 0;
+        const x0o = cx + rOuter*Math.cos(a0), y0o = cy + rOuter*Math.sin(a0);
+        const x1o = cx + rOuter*Math.cos(a1), y1o = cy + rOuter*Math.sin(a1);
+        const x0i = cx + rInner*Math.cos(a1), y0i = cy + rInner*Math.sin(a1);
+        const x1i = cx + rInner*Math.cos(a0), y1i = cy + rInner*Math.sin(a0);
+        svg += '<path d="M' + x0o.toFixed(1) + ',' + y0o.toFixed(1) +
+          ' A' + rOuter + ',' + rOuter + ' 0 ' + largeArc + ',1 ' + x1o.toFixed(1) + ',' + y1o.toFixed(1) +
+          ' L' + x0i.toFixed(1) + ',' + y0i.toFixed(1) +
+          ' A' + rInner + ',' + rInner + ' 0 ' + largeArc + ',0 ' + x1i.toFixed(1) + ',' + y1i.toFixed(1) +
+          ' Z" fill="' + DONUT_COLORS[i % DONUT_COLORS.length] + '" stroke="#05000c" stroke-width="1.5"></path>';
+      });
+      // centro: cargado arriba (verde) y pagado abajo (rojo), en vez de un solo numero
+      svg += '<text x="' + cx + '" y="' + (cy-22) + '" font-size="9" fill="var(--text-dim)" text-anchor="middle">ENTRÓ (CARGADO)</text>';
+      svg += '<text x="' + cx + '" y="' + (cy-6) + '" font-size="13" font-weight="bold" fill="var(--green)" text-anchor="middle">Gs. ' + fmtGuaranies(totalCargadoAll) + '</text>';
+      svg += '<text x="' + cx + '" y="' + (cy+14) + '" font-size="9" fill="var(--text-dim)" text-anchor="middle">PAGADO A JUGADORES</text>';
+      svg += '<text x="' + cx + '" y="' + (cy+30) + '" font-size="13" font-weight="bold" fill="var(--red)" text-anchor="middle">Gs. ' + fmtGuaranies(totalPagadoAll) + '</text>';
+      svg += '</svg>';
+
+      // lista al costado: nombre + cuánto cargó (verde) y pagó (rojo) cada uno
+      let sideList = '<div style="display:flex; flex-direction:column; gap:10px; flex:1; min-width:120px;">';
+      adminsConMovimiento.forEach((email,i)=>{
+        const a = byAdmin[email];
+        sideList += '<div style="font-size:12px;">' +
+          '<div style="display:flex; align-items:center; gap:6px; color:var(--text); font-weight:bold;">' +
+            '<span style="display:inline-block; width:10px; height:10px; border-radius:50%; background:' + DONUT_COLORS[i % DONUT_COLORS.length] + ';"></span>' +
+            a.name +
+          '</div>' +
+          '<div style="margin-left:16px; color:var(--green);">+' + fmtGuaranies(a.totalCargado) + '</div>' +
+          '<div style="margin-left:16px; color:var(--red);">−' + fmtGuaranies(a.totalPagado) + '</div>' +
+        '</div>';
+      });
+      sideList += '</div>';
+
+      const liquidarTodosBtn = document.createElement('button');
+      liquidarTodosBtn.className = 'admin-role-btn';
+      liquidarTodosBtn.style.cssText = 'width:100%; margin-top:16px; color:#e5a7a7; border-color:var(--red);';
+      liquidarTodosBtn.textContent = '🔄 Liquidar a todos (empezar de cero)';
+      liquidarTodosBtn.addEventListener('click', async function(){
+        if(!confirm('¿Ya arreglaste cuentas con TODOS los administradores? Esto va a reiniciar el conteo de todos a la vez. El historial viejo no se borra, solo deja de sumarse.')) return;
+        liquidarTodosBtn.disabled = true;
+        try{
+          for(const email of adminsConMovimiento){
+            await apiCall('/api/admin/ledger/settle', { token: getSessionToken(), adminEmail: email });
+          }
+          renderLedger();
+        }catch(err){
+          liquidarTodosBtn.disabled = false;
+          alert(err.message || 'No se pudo liquidar a todos');
+        }
+      });
+
+      donutWrap.innerHTML = '<div class="stats-chart-title">Movimiento por administrador</div>';
+      const rowWrap = document.createElement('div');
+      rowWrap.style.cssText = 'display:flex; flex-wrap:wrap; gap:16px; align-items:center; justify-content:center;';
+      rowWrap.innerHTML = svg + sideList;
+      donutWrap.appendChild(rowWrap);
+      donutWrap.appendChild(liquidarTodosBtn);
       summaryEl.appendChild(donutWrap);
     }
   }
