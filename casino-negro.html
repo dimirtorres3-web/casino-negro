@@ -2173,9 +2173,9 @@
       </div>
       <div class="dice-msg" id="diceMsg">Elegí tu apuesta</div>
       <div class="dice-bet-options">
-        <div class="bet-option" data-dicebet="under">Menor a 7<span class="payout">x1.7</span></div>
-        <div class="bet-option" data-dicebet="seven">Exacto 7<span class="payout">x4.2</span></div>
-        <div class="bet-option" data-dicebet="over">Mayor a 7<span class="payout">x1.7</span></div>
+        <div class="bet-option" data-dicebet="under">Menor a 7<span class="payout">x2.16</span></div>
+        <div class="bet-option" data-dicebet="seven">Exacto 7<span class="payout">x5.4</span></div>
+        <div class="bet-option" data-dicebet="over">Mayor a 7<span class="payout">x2.16</span></div>
       </div>
       <div class="bet-row">
         <button id="diceBetMinus">−</button>
@@ -2245,7 +2245,7 @@
         <button id="pokerDrawBtn" disabled>CAMBIAR</button>
       </div>
       <div class="poker-paytable">
-        Escalera real x100 · Escalera color x50 · Póker x25 · Full x9<br>
+        Escalera real x150 · Escalera color x50 · Póker x25 · Full x9<br>
         Color x6 · Escalera x4 · Trío x3 · Doble par x2 · Par de J o más x1
       </div>
     </div>
@@ -2354,7 +2354,7 @@
       <button class="spin-btn" id="bingoPlayBtn">COMPRAR CARTÓN Y JUGAR</button>
       <div class="bingo-paytable">
         Se cantan 60 de las 90 bolillas.<br>
-        <b>Línea</b> (una fila completa) = x1.7 &nbsp;·&nbsp; <b>¡BINGO!</b> (cartón lleno) = x208
+        <b>Línea</b> (una fila completa) = x1.88 &nbsp;·&nbsp; <b>¡BINGO!</b> (cartón lleno) = x230
       </div>
     </div>
   </section>
@@ -2428,8 +2428,8 @@
       </div>
       <div class="sicbo-msg" id="sicboMsg">Elegí una o más apuestas</div>
       <div class="sicbo-bet-options" id="sicboBetOptions">
-        <div class="bet-option" data-sicbo="grande">Grande (11-17)<span class="payout">x1.6</span></div>
-        <div class="bet-option" data-sicbo="chica">Chica (4-10)<span class="payout">x1.6</span></div>
+        <div class="bet-option" data-sicbo="grande">Grande (11-17)<span class="payout">x2</span></div>
+        <div class="bet-option" data-sicbo="chica">Chica (4-10)<span class="payout">x2</span></div>
       </div>
       <div style="text-align:center; font-size:11px; color:var(--text-dim); margin-bottom:8px;">O elegí un número (paga según cuántos dados lo muestren):</div>
       <div class="sicbo-numbers" id="sicboNumbers"></div>
@@ -2562,14 +2562,10 @@ function playCrash(){
 function playBounce(){ playTone(500 + Math.random()*400, 0.04, 'sine', 0.07, 0); }
 
 // ======================================================================
-// DIFICULTAD POR MONTO DE APUESTA: apuestas altas tienen más chance de que
-// la casa "cancele" una victoria que ya salió. Aplica a todos los juegos.
+// Ya no existe penalización extra por monto de apuesta en ningún juego
+// (ni siquiera en Aviator, que antes la tenía). La ventaja de la casa
+// vive únicamente en la matemática de cada juego (pesos y tablas de pago).
 // ======================================================================
-function betDifficultyPenalty(betAmount){
-  if(betAmount >= 200) return 0.55; // apuestas de 200+ : 55% de perder igual
-  if(betAmount >= 50) return 0.35;  // apuestas de 50 a 199: 35% de perder igual
-  return 0.18; // cualquier apuesta, hasta la más chica: 18% de perder igual
-}
 function applyBetDifficulty(betAmount, wouldWin){
   // Si el resultado dice que corresponde pagar, se paga siempre — sin
   // excepción, en ningún juego. Ya hubo varios casos (ruleta, sic bo) donde
@@ -3614,7 +3610,7 @@ document.getElementById('soundToggleBtn').addEventListener('click', function(){
 
 // ---- SLOTS ----
 const symbols = ['♠️','🍒','🍋','🔔','💎','7️⃣']; // ♠️ = símbolo de relleno, no paga nada (como en una máquina real)
-const weights =  [10, 27, 19, 10, 5.5, 1.5]; // menor peso = menos probable
+const weights =  [2.5, 27, 19, 10, 5.5, 1.5]; // menor peso = menos probable (RTP ~90%)
 function pickSymbol(){
   const total = weights.reduce((a,b)=>a+b,0);
   let r = Math.random()*total;
@@ -4123,9 +4119,9 @@ rollDiceBtn.addEventListener('click', ()=>{
       diceTotalEl.textContent = total;
 
       let win = 0;
-      if(selectedDiceBet === 'under' && total < 7) win = Math.round(diceBetAmount * 1.7);
-      else if(selectedDiceBet === 'over' && total > 7) win = Math.round(diceBetAmount * 1.7);
-      else if(selectedDiceBet === 'seven' && total === 7) win = Math.round(diceBetAmount * 4.2);
+      if(selectedDiceBet === 'under' && total < 7) win = Math.round(diceBetAmount * 2.16);
+      else if(selectedDiceBet === 'over' && total > 7) win = Math.round(diceBetAmount * 2.16);
+      else if(selectedDiceBet === 'seven' && total === 7) win = Math.round(diceBetAmount * 5.4);
 
       let diceActualWin = 0;
       if(win > 0 && applyBetDifficulty(diceBetAmount, true)){
@@ -4170,7 +4166,7 @@ const aviatorCashoutBtn = document.getElementById('aviatorCashoutBtn');
 bindBetInput('avBetMinus', 'avBetPlus', 'aviatorBet', ()=>aviatorBetAmount, v=>aviatorBetAmount=v);
 
 function generateCrashPoint(bet){
-  const houseEdge = 0.20 + betDifficultyPenalty(bet || 0); // apuestas altas: la casa se protege más, el avión vuela menos
+  const houseEdge = 0.08; // ~92% RTP, igual para cualquier monto de apuesta
   const r = Math.random();
   if(r < houseEdge) return 1.00;
   let crash = (1 / (1 - r)) * (1 - houseEdge);
@@ -4368,13 +4364,14 @@ document.getElementById('minesBet').addEventListener('change', function(){
 });
 
 // Tabla de multiplicadores por casilla segura revelada, calculada matemáticamente
-// para que la casa mantenga siempre un 15% de ventaja pareja, sin importar en
-// qué momento se retire el jugador — y sin bajar nunca (antes el 3-minas
-// llegaba a bajar en vez de subir). Techo de x100 para evitar pozos gigantes.
+// para que la casa mantenga siempre un 8% de ventaja pareja (antes 15%, más fácil
+// de ganar ahora), sin importar en qué momento se retire el jugador — y sin bajar
+// nunca (antes el 3-minas llegaba a bajar en vez de subir). Techo de x100 para
+// evitar pozos gigantes que rompan el fondo con una apuesta chica.
 const MINES_MULT_TABLE = {
-  3:  [1.0,1.104,1.269,1.47,1.715,2.018,2.396,2.875,3.491,4.297,5.371,6.836,8.886,11.848,16.292,23.274,34.911,55.857,97.75,100,100,100],
-  5:  [1.062,1.342,1.715,2.219,2.913,3.884,5.271,7.298,10.339,15.038,22.558,35.09,57.021,97.75,100,100,100,100,100,100],
-  10: [1.417,2.429,4.297,7.877,15.038,30.077,63.496,100,100,100,100,100,100,100,100]
+  3:  [1.045,1.195,1.374,1.591,1.856,2.184,2.593,3.112,3.779,4.651,5.813,7.399,9.618,12.824,17.633,25.19,37.786,60.457,100,100,100,100],
+  5:  [1.15,1.453,1.856,2.402,3.153,4.204,5.705,7.899,11.19,16.277,24.415,37.979,61.717,100,100,100,100,100,100,100],
+  10: [1.533,2.629,4.651,8.526,16.277,32.554,68.725,100,100,100,100,100,100,100,100]
 };
 function minesNextMultiplier(){
   const table = MINES_MULT_TABLE[minesCount] || MINES_MULT_TABLE[5];
@@ -4556,7 +4553,7 @@ function evaluatePokerHand(hand){
     if(uniqueVals.join(',') === '2,3,4,5,14') isStraight = true;
   }
 
-  if(isStraight && isFlush && uniqueVals[0] === 10) return { name: 'Escalera real', mult: 100 };
+  if(isStraight && isFlush && uniqueVals[0] === 10) return { name: 'Escalera real', mult: 150 };
   if(isStraight && isFlush) return { name: 'Escalera de color', mult: 50 };
   if(countVals[0] === 4) return { name: 'Póker', mult: 25 };
   if(countVals[0] === 3 && countVals[1] === 2) return { name: 'Full', mult: 9 };
@@ -4714,18 +4711,20 @@ baccDealBtn.addEventListener('click', ()=>{
   if(playerTotal > bankerTotal) winner = 'player';
   else if(bankerTotal > playerTotal) winner = 'banker';
 
+  // pagos ahora igual a las cuotas reales que ya se mostraban en pantalla
+  // (antes se mostraba x2/x1.95/x8 pero en realidad se pagaba menos — corregido)
   let win = 0;
   if(winner === 'tie'){
     if(selectedBaccBet === 'tie'){
-      win = baccBetAmount * 5;
+      win = baccBetAmount * 8;
     } else {
       win = baccBetAmount;
     }
   } else if(winner === selectedBaccBet){
     if(winner === 'banker'){
-      win = Math.round(baccBetAmount * 1.7);
+      win = Math.round(baccBetAmount * 1.95);
     } else {
-      win = Math.round(baccBetAmount * 1.75);
+      win = Math.round(baccBetAmount * 2);
     }
   }
 
@@ -4752,7 +4751,7 @@ baccDealBtn.addEventListener('click', ()=>{
 
 // ---- PLINKO ----
 const PLINKO_ROWS = 8;
-const plinkoMultipliers = [12.7, 2.55, 0.85, 0.42, 0.25, 0.42, 0.85, 2.55, 12.7];
+const plinkoMultipliers = [16.41, 3.29, 1.1, 0.54, 0.32, 0.54, 1.1, 3.29, 16.41]; // ~90% RTP
 let plinkoBetAmount = 1;
 let plinkoDropping = false;
 
@@ -4875,9 +4874,10 @@ plinkoDropBtn.addEventListener('click', ()=>{
 const premiumSymbols = ['cereza','limon','uva','campana','estrella','siete','joker'];
 const premiumWeights =  [33, 26, 19, 12, 6, 3, 1];
 const premiumEmoji = { cereza:'🍒', limon:'🍋', uva:'🍇', campana:'🔔', estrella:'⭐', siete:'7️⃣', joker:'🃏' };
-const premiumPayout3 = { cereza:4, limon:8, uva:11, campana:22, estrella:44, siete:102, joker:408 };
-const premiumPayout4 = { cereza:12, limon:18, uva:26, campana:49, estrella:100, siete:230, joker:1190 };
-const premiumPayout5 = { cereza:20, limon:32, uva:46, campana:85, estrella:160, siete:280, joker:400 };
+// pagos subidos a ~90% RTP; joker corregido para que 5 iguales pague más que 4 (antes pagaba menos, era un bug)
+const premiumPayout3 = { cereza:6, limon:11, uva:16, campana:31, estrella:63, siete:146, joker:60 };
+const premiumPayout4 = { cereza:17, limon:26, uva:37, campana:70, estrella:143, siete:328, joker:180 };
+const premiumPayout5 = { cereza:29, limon:46, uva:66, campana:121, estrella:228, siete:399, joker:450 };
 
 let premiumBetAmount = 1;
 const PREMIUM_REELS = 5, PREMIUM_ROWS = 3;
@@ -4999,8 +4999,8 @@ function evaluatePremiumSpin(midRow){
 
 // ---- BINGO (90 bolillas, línea o cartón lleno) ----
 const BINGO_DRAWS = 60; // de las 90 bolillas se cantan 60 por partida
-const BINGO_LINE_MULT = 1.7;
-const BINGO_FULL_MULT = 208;
+const BINGO_LINE_MULT = 1.88;
+const BINGO_FULL_MULT = 230; // ~90% RTP
 let bingoBetAmount = 1;
 let bingoPlaying = false;
 
@@ -5158,10 +5158,11 @@ function finishBingo(allNumbers, rows, marked){
 }
 
 // ==================== KENO ====================
+// pagos subidos a ~90% RTP, techo del premio mayor mantenido igual que antes (sin pozos gigantes)
 const KENO_PAYTABLES = {
-  4:  {3:6, 4:120},
-  8:  {5:15, 6:70, 7:300, 8:1200},
-  10: {6:18, 7:80, 8:350, 9:800, 10:1500}
+  4:  {3:10, 4:150},
+  8:  {5:26, 6:155, 7:350, 8:1200},
+  10: {6:39, 7:195, 8:976, 9:800, 10:1500}
 };
 let kenoPicksCount = 4;
 let kenoBetAmount = 1;
@@ -5275,7 +5276,7 @@ kenoPlayBtn.addEventListener('click', ()=>{
 const SCRATCH_SYMBOLS = ['cereza','limon','trebol','diamante','perla','estrella','diamante2','siete'];
 const SCRATCH_WEIGHTS = [26, 20, 17, 14, 11, 7, 4, 1];
 const SCRATCH_EMOJI = { cereza:'🍒', limon:'🍋', trebol:'🍀', diamante:'💎', perla:'🔮', estrella:'⭐', diamante2:'👑', siete:'7️⃣' };
-const SCRATCH_PAYOUT = { cereza:1, limon:2, trebol:3, diamante:6, perla:13, estrella:30, diamante2:70, siete:150 };
+const SCRATCH_PAYOUT = { cereza:1, limon:3, trebol:4, diamante:8, perla:16, estrella:38, diamante2:88, siete:189 }; // ~90% RTP
 const SCRATCH_LINES = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
 let scratchBetAmount = 1;
 let scratchPlaying = false;
@@ -5415,8 +5416,8 @@ hiloStartBtn.addEventListener('click', ()=>{
   const lowerCount = remaining.filter(c => rankValue(c.rank) < curVal).length;
   const pHigher = higherCount / remaining.length;
   const pLower = lowerCount / remaining.length;
-  hiloMultHigher = pHigher > 0 ? Math.round((0.68/pHigher)*100)/100 : 0;
-  hiloMultLower = pLower > 0 ? Math.round((0.68/pLower)*100)/100 : 0;
+  hiloMultHigher = pHigher > 0 ? Math.round((0.92/pHigher)*100)/100 : 0; // RTP ~92%
+  hiloMultLower = pLower > 0 ? Math.round((0.92/pLower)*100)/100 : 0;
 
   hiloMultRow.innerHTML =
     '<span>▲ Más alta: x' + (hiloMultHigher||'—') + '</span>' +
@@ -5545,13 +5546,13 @@ sicboRollBtn.addEventListener('click', ()=>{
       let totalWin = 0;
       sicboSelected.forEach(bet=>{
         let win = 0;
-        if(bet.type === 'grande' && sum>=11 && sum<=17 && !isTriple) win = Math.round(sicboBetAmount*1.6);
-        else if(bet.type === 'chica' && sum>=4 && sum<=10 && !isTriple) win = Math.round(sicboBetAmount*1.6);
+        if(bet.type === 'grande' && sum>=11 && sum<=17 && !isTriple) win = Math.round(sicboBetAmount*2); // pago real de casino (1:1)
+        else if(bet.type === 'chica' && sum>=4 && sum<=10 && !isTriple) win = Math.round(sicboBetAmount*2);
         else if(bet.type === 'number'){
           const count = results.filter(r=>r===bet.value).length;
-          if(count===1) win = Math.round(sicboBetAmount*1.6);
-          else if(count===2) win = Math.round(sicboBetAmount*2.4);
-          else if(count===3) win = Math.round(sicboBetAmount*3.2);
+          if(count===1) win = Math.round(sicboBetAmount*2);
+          else if(count===2) win = Math.round(sicboBetAmount*3);
+          else if(count===3) win = Math.round(sicboBetAmount*4);
         }
         if(win > 0 && applyBetDifficulty(sicboBetAmount, true)) totalWin += win;
       });
