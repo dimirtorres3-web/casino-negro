@@ -1460,6 +1460,28 @@
   .screen.active{ display:block; }
   @keyframes spin{ to{ transform: rotate(360deg); } }
 
+  /* La pantalla de juego ocupa siempre el alto real de la pantalla (sin
+     dejar un hueco vacío abajo en celulares más altos, y sin necesitar
+     scroll en los más bajos): el panel del juego que está activo se estira
+     para llenar ese espacio, y en la ruleta ese espacio extra se reparte
+     entre sus secciones en vez de quedar amontonado al final. */
+  #screenGame.active{
+    display:flex;
+    flex-direction:column;
+    min-height: calc(100dvh - 58px - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+  }
+  #screenGame.active > section.active{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+  }
+  #roulette.active .roulette-panel{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    justify-content: space-between;
+  }
+
   .auth-card{
     background: linear-gradient(165deg, #1a1512, #0d0d0d);
     border: 1px solid var(--gold-dim);
