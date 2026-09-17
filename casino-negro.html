@@ -249,19 +249,19 @@
     background: var(--panel);
     border: 1px solid var(--gold-dim);
     border-radius: 14px;
-    padding: 16px;
+    padding: 12px;
   }
   .wheel-area{
     display:flex;
     flex-direction:column;
     align-items:center;
-    margin-bottom: 14px;
+    margin-bottom: 8px;
   }
   .wheel-outer{
-    width: 190px; height: 190px;
+    width: 108px; height: 108px;
     border-radius: 50%;
     position: relative;
-    margin-bottom: 14px;
+    margin-bottom: 6px;
   }
   .wheel{
     width:100%; height:100%;
@@ -297,30 +297,37 @@
     z-index: 4;
   }
   .result-number{
-    width: 56px; height:56px;
+    width: 36px; height:36px;
     border-radius:50%;
     display:flex;
     align-items:center;
     justify-content:center;
-    font-size: 22px;
+    font-size: 16px;
     font-weight:bold;
     border: 2px solid var(--gold-dim);
-    margin-bottom: 8px;
+    margin-bottom: 4px;
   }
   .result-number.red{ background: var(--red); color:#fff; }
   .result-number.black{ background: #000; color: var(--gold); }
   .result-number.zero{ background: var(--green); color:#fff; }
   .roulette-msg{
     color: var(--gold);
-    font-size: 15px;
-    min-height: 22px;
+    font-size: 13px;
+    min-height: 16px;
     text-align:center;
   }
   .bet-options{
     display:grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 10px;
-    margin-bottom: 13px;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 6px;
+    margin-bottom: 6px;
+  }
+  .bet-options .bet-option{
+    padding: 6px 3px;
+    font-size: 12px;
+  }
+  .bet-options .bet-option .payout{
+    margin-top: 2px;
   }
   .bet-option{
     background: linear-gradient(160deg, var(--panel2), #111111);
@@ -354,15 +361,15 @@
   }
   .numbers-grid{
     display:grid;
-    grid-template-columns: repeat(6, 1fr);
-    gap: 6px;
-    margin-bottom: 13px;
+    grid-template-columns: repeat(9, minmax(0, 1fr));
+    gap: 3px;
+    margin-bottom: 6px;
   }
   .num-btn{
-    aspect-ratio: 1;
+    height: 24px;
     border-radius: 4px;
     border: 1px solid #333;
-    font-size: 12px;
+    font-size: 11px;
     cursor:pointer;
     color:#fff;
     display:flex;
@@ -371,7 +378,7 @@
   }
   .num-btn.red{ background: var(--red); }
   .num-btn.black{ background: #1a1a1a; }
-  .num-btn.zero{ background: var(--green); grid-column: span 6; aspect-ratio: auto; height:32px;}
+  .num-btn.zero{ background: var(--green); grid-column: span 9; aspect-ratio: auto; height:24px;}
   .num-btn.selected{
     outline: 2px solid var(--gold);
     outline-offset: 2px;
@@ -563,7 +570,7 @@
   }
   .dice-bet-options{
     display:grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 8px;
     margin-bottom: 13px;
   }
@@ -684,7 +691,7 @@
   }
   .mines-config{
     display:grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 8px;
     margin-bottom: 12px;
   }
@@ -837,7 +844,7 @@
   }
   .bacc-bet-options{
     display:grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 8px;
     margin-bottom: 13px;
   }
@@ -1183,7 +1190,7 @@
   }
   .keno-config{
     display:grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 8px;
     margin-bottom: 13px;
   }
@@ -1387,15 +1394,20 @@
   }
   .sicbo-bet-options{
     display:grid;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 8px;
     margin-bottom: 13px;
   }
   .sicbo-numbers{
     display:grid;
-    grid-template-columns: repeat(6, 1fr);
+    grid-template-columns: repeat(6, minmax(0, 1fr));
     gap: 6px;
     margin-bottom: 13px;
+  }
+  .sicbo-numbers .bet-option{
+    min-width: 0;
+    padding: 10px 4px;
+    overflow-wrap: anywhere;
   }
 
   /* ---- RUEDA DE LA SUERTE ---- */
@@ -1625,7 +1637,7 @@
 
   .lobby-grid{
     display:grid;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 12px;
     margin-bottom: 24px;
   }
@@ -2124,8 +2136,8 @@
 
       <div class="numbers-grid" id="numbersGrid"></div>
 
-      <div style="text-align:center; font-size:11px; color:var(--text-dim); margin-bottom:10px;">La ficha se aplica a cada casilla marcada por separado</div>
-      <div class="bet-row">
+      <div style="text-align:center; font-size:10px; color:var(--text-dim); margin-bottom:4px;">La ficha se aplica a cada casilla marcada por separado</div>
+      <div class="bet-row" style="margin-bottom:6px; gap:10px;">
         <button id="rBetMinus">−</button>
         <div class="bet-amount"><input type="number" id="rouletteBet" class="bet-input" value="1" min="1"> fichas c/u</div>
         <button id="rBetPlus">+</button>
@@ -3579,7 +3591,6 @@ const gameTitles = {
   keno: 'Keno', scratch: 'Rasca y Gana', hilo: 'Mayor o Menor', sicbo: 'Sic Bo', fortunewheel: 'Rueda de la Suerte'
 };
 
-let aviatorStarted = false;
 function openGame(id){
   document.querySelectorAll('section').forEach(s=>s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
@@ -3587,8 +3598,10 @@ function openGame(id){
   document.getElementById('screenLobby').classList.remove('active');
   document.getElementById('screenGame').classList.add('active');
 
-  if(id === 'aviator' && !aviatorStarted){
-    aviatorStarted = true;
+  // Aviator arranca de cero cada vez que se entra (nunca sigue corriendo en
+  // segundo plano cuando no se está mirando esa pantalla — ver stopAviatorLoops).
+  if(id === 'aviator'){
+    stopAviatorLoops();
     startWaitingPhase();
   }
 }
@@ -3600,6 +3613,9 @@ document.querySelectorAll('.lobby-card').forEach(card=>{
 document.getElementById('backBtn').addEventListener('click', ()=>{
   document.getElementById('screenGame').classList.remove('active');
   document.getElementById('screenLobby').classList.add('active');
+  // Si estábamos en Aviator, cortar sus timers acá: si no, el avión sigue
+  // volando y explotando solo (con sonido y todo) aunque ya no se lo esté viendo.
+  stopAviatorLoops();
 });
 
 document.getElementById('soundToggleBtn').addEventListener('click', function(){
@@ -4150,6 +4166,7 @@ let aviatorMultiplier = 1;
 let aviatorElapsed = 0;
 let aviatorLoop = null;
 let aviatorCountdownTimer = null;
+let aviatorWaitTimeout = null;
 let aviatorPoints = [];
 let aviatorHistoryList = [];
 
@@ -4281,7 +4298,18 @@ function crashNow(){
     pushHistory(aviatorMultiplier, false);
   }
 
-  setTimeout(startWaitingPhase, 2800);
+  aviatorWaitTimeout = setTimeout(startWaitingPhase, 2800);
+}
+
+// Corta todos los timers de Aviator (cuenta regresiva, vuelo y la espera antes
+// del próximo despegue). Antes esto nunca se cortaba: el avión seguía
+// jugando solo en segundo plano aunque el jugador ya hubiera vuelto al lobby,
+// y por eso se seguía escuchando la explosión sin que la pantalla de Aviator
+// estuviera abierta.
+function stopAviatorLoops(){
+  clearInterval(aviatorCountdownTimer);
+  clearInterval(aviatorLoop);
+  clearTimeout(aviatorWaitTimeout);
 }
 
 aviatorBetBtn.addEventListener('click', ()=>{
